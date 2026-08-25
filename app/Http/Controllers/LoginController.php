@@ -12,10 +12,11 @@ class LoginController extends Controller
     /**
      * Display the login page.
      */
-     public function showLoginForm()
+    public function showLoginForm(): View
     {
         return view('login');
     }
+
     /**
      * Process the login request.
      */
@@ -23,31 +24,35 @@ class LoginController extends Controller
     {
         $credentials = $request->validate([
             'employeeid' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'password'   => ['required', 'string'],
         ], [
             'employeeid.required' => 'Please enter your Employee ID.',
-            'password.required' => 'Please enter your password.',
+            'password.required'   => 'Please enter your password.',
         ]);
 
-        /*
-         * Only users with active status can log in.
-         */
+        // Only active users are allowed to log in.
         $credentials['status'] = 'active';
 
         $remember = $request->boolean('remember');
 
-        if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate();
+        if (!Auth::attempt($credentials, $remember)) {
+            return back()
+                ->withErrors([
+                    'employeeid' => 'The Employee ID or password is incorrect, or the account is inactive.',
+                ])
+                ->onlyInput('employeeid');
+        }
 
-            $user = Auth::user();
+        $request->session()->regenerate();
 
-                return redirect()
-                 ->route('index')
-                ->with('success', 'Login successful.');
+        $user = Auth::user();
 
-            /*
-             * Logout users with an unknown access level.
-             */
+        /*
+         * Allow only recognized access levels.
+         */
+        $accessLevel = strtolower(trim($user->access_level ?? ''));
+
+        if (!in_array($accessLevel, ['admin', 'staff'], true)) {
             Auth::logout();
 
             $request->session()->invalidate();
@@ -58,11 +63,24 @@ class LoginController extends Controller
                 ->with('error', 'Your account does not have a valid access level.');
         }
 
-        return back()
-            ->withErrors([
-                'employeeid' => 'The Employee ID or password is incorrect, or the account is inactive.',
-            ])
-            ->onlyInput('employeeid');
+        /*
+         * Save the logged-in user's information.
+         */
+        $request->session()->put([
+            'session_id'           => $user->id,
+            'session_employeeid'   => $user->employeeid,
+            'session_name'         => trim(
+                ($user->firstname ?? '') . ' ' .
+                ($user->lastname ?? '')
+            ),
+            'session_email'        => $user->email,
+            'session_access_level' => $accessLevel,
+            'loggedin'             => true,
+        ]);
+
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Login successful.');
     }
 
     /**

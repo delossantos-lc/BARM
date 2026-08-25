@@ -135,9 +135,7 @@
                     </li>
 
                     <li class="breadcrumb-item active">
-
                         Student & Personnel Management
-
                     </li>
 
                 </ol>
@@ -148,7 +146,7 @@
 
 
         <!-- ============================================================
-             SUCCESS
+             SUCCESS MESSAGE
         ============================================================= -->
 
         @if(session('success'))
@@ -214,6 +212,7 @@
 
                 </ul>
 
+
                 <button
                     type="button"
                     class="close"
@@ -230,7 +229,7 @@
 
 
         <!-- ============================================================
-             SUMMARY
+             SUMMARY CARDS
         ============================================================= -->
 
         <div class="row">
@@ -336,11 +335,12 @@
 
             </div>
 
+
         </div>
 
 
         <!-- ============================================================
-             MANAGEMENT
+             MANAGEMENT CARD
         ============================================================= -->
 
         <div class="card management-card">
@@ -355,6 +355,7 @@
                     "
                 >
 
+
                     <div class="col-md-6">
 
                         <h4 class="card-title mb-0">
@@ -368,7 +369,13 @@
                     </div>
 
 
+                    <!-- =================================================
+                         ADD BUTTONS
+                         ADMIN + STAFF CAN USE
+                    ================================================== -->
+
                     <div class="col-md-6 text-md-right">
+
 
                         <!-- ADD STUDENT -->
 
@@ -410,7 +417,9 @@
 
                         </button>
 
+
                     </div>
+
 
                 </div>
 
@@ -432,6 +441,7 @@
                         mb-4
                     "
                 >
+
 
                     <li class="nav-item">
 
@@ -478,8 +488,8 @@
 
                     </li>
 
-                </ul>
 
+                </ul>
 
 
                 <div class="tab-content">
@@ -506,6 +516,7 @@
                                 class="table table-hover"
                             >
 
+
                                 <thead>
 
                                     <tr>
@@ -522,7 +533,21 @@
 
                                         <th>Contact</th>
 
-                                        <th>Action</th>
+
+                                        <!-- ADMIN ONLY -->
+
+                                        @if(
+                                            strtolower(
+                                                session('session_access_level')
+                                            ) === 'admin'
+                                        )
+
+                                            <th>
+                                                Action
+                                            </th>
+
+                                        @endif
+
 
                                     </tr>
 
@@ -531,14 +556,23 @@
 
                                 <tbody>
 
+
                                 @foreach($students as $student)
+
 
                                     <tr>
 
+
+                                        <!-- NUMBER -->
+
                                         <td>
+
                                             {{ $loop->iteration }}
+
                                         </td>
 
+
+                                        <!-- STUDENT -->
 
                                         <td>
 
@@ -563,6 +597,8 @@
                                         </td>
 
 
+                                        <!-- YEAR LEVEL -->
+
                                         <td>
 
                                             {{
@@ -572,6 +608,8 @@
 
                                         </td>
 
+
+                                        <!-- PROGRAM -->
 
                                         <td>
 
@@ -583,11 +621,11 @@
                                         </td>
 
 
+                                        <!-- RFID -->
+
                                         <td>
 
-                                            @if(
-                                                $student->rfid_tag_uid
-                                            )
+                                            @if($student->rfid_tag_uid)
 
                                                 <span class="rfid-badge">
 
@@ -601,17 +639,17 @@
 
                                                     {{
                                                         $student
-                                                        ->rfid_tag_uid
+                                                            ->rfid_tag_uid
                                                     }}
 
                                                 </span>
 
                                             @else
 
-                                                <span
-                                                    class="text-muted"
-                                                >
+                                                <span class="text-muted">
+
                                                     No RFID
+
                                                 </span>
 
                                             @endif
@@ -619,418 +657,396 @@
                                         </td>
 
 
+                                        <!-- CONTACT -->
+
                                         <td>
 
                                             {{
                                                 $student
-                                                ->contact_information
+                                                    ->contact_information
                                                 ?? '-'
                                             }}
 
                                         </td>
 
 
-                                        <td
-                                            style="
-                                                min-width:150px;
-                                            "
-                                        >
+                                        <!-- =================================================
+                                             ACTION
+                                             ADMIN ONLY
+                                        ================================================== -->
 
-                                            <!-- EDIT -->
-
-                                            <button
-                                                type="button"
-                                                class="
-                                                    btn
-                                                    btn-info
-                                                    btn-sm
-                                                    action-button
-                                                "
-                                                data-toggle="modal"
-                                                data-target="#editStudentModal{{ $student->id }}"
-                                            >
-
-                                                <i
-                                                    class="fa fa-pencil"
-                                                ></i>
-
-                                                Edit
-
-                                            </button>
+                                        @if(
+                                            strtolower(
+                                                session('session_access_level')
+                                            ) === 'admin'
+                                        )
 
 
-                                            <!-- DELETE -->
-
-                                            <form
-                                                action="{{
-                                                    route(
-                                                        'management.students.destroy',
-                                                        $student
-                                                    )
-                                                }}"
-                                                method="POST"
-                                                class="d-inline"
-                                                onsubmit="
-                                                    return confirm(
-                                                        'Delete this student?'
-                                                    );
+                                            <td
+                                                style="
+                                                    min-width:150px;
                                                 "
                                             >
 
-                                                @csrf
-                                                @method('DELETE')
+
+                                                <!-- EDIT -->
 
                                                 <button
-                                                    type="submit"
+                                                    type="button"
                                                     class="
                                                         btn
-                                                        btn-danger
+                                                        btn-info
                                                         btn-sm
                                                         action-button
                                                     "
+                                                    data-toggle="modal"
+                                                    data-target="#editStudentModal{{ $student->id }}"
                                                 >
 
-                                                    <i
-                                                        class="
-                                                            fa
-                                                            fa-trash
-                                                        "
-                                                    ></i>
+                                                    <i class="fa fa-pencil"></i>
+
+                                                    Edit
 
                                                 </button>
 
-                                            </form>
 
-                                        </td>
-
-                                    </tr>
-
-
-                                    <!-- =================================
-                                         EDIT STUDENT MODAL
-                                    ================================== -->
-
-                                    <div
-                                        class="modal fade"
-                                        id="editStudentModal{{ $student->id }}"
-                                        tabindex="-1"
-                                    >
-
-                                        <div
-                                            class="
-                                                modal-dialog
-                                                modal-lg
-                                            "
-                                        >
-
-                                            <div class="modal-content">
+                                                <!-- DELETE -->
 
                                                 <form
                                                     action="{{
                                                         route(
-                                                            'management.students.update',
+                                                            'management.students.destroy',
                                                             $student
                                                         )
                                                     }}"
                                                     method="POST"
+                                                    class="d-inline"
+                                                    onsubmit="
+                                                        return confirm(
+                                                            'Delete this student?'
+                                                        );
+                                                    "
                                                 >
 
                                                     @csrf
-                                                    @method('PUT')
+
+                                                    @method('DELETE')
 
 
-                                                    <div
-                                                        class="modal-header"
+                                                    <button
+                                                        type="submit"
+                                                        class="
+                                                            btn
+                                                            btn-danger
+                                                            btn-sm
+                                                            action-button
+                                                        "
                                                     >
 
-                                                        <h5
+                                                        <i
                                                             class="
-                                                                modal-title
+                                                                fa
+                                                                fa-trash
                                                             "
-                                                        >
+                                                        ></i>
 
-                                                            Edit Student
-
-                                                        </h5>
-
-                                                        <button
-                                                            type="button"
-                                                            class="close"
-                                                            data-dismiss="modal"
-                                                        >
-
-                                                            <span>
-                                                                &times;
-                                                            </span>
-
-                                                        </button>
-
-                                                    </div>
+                                                    </button>
 
 
-                                                    <div
-                                                        class="modal-body"
+                                                </form>
+
+
+                                            </td>
+
+
+                                        @endif
+
+
+                                    </tr>
+
+
+                                    <!-- =================================================
+                                         EDIT STUDENT MODAL
+                                         ADMIN ONLY
+                                    ================================================== -->
+
+                                    @if(
+                                        strtolower(
+                                            session('session_access_level')
+                                        ) === 'admin'
+                                    )
+
+
+                                        <div
+                                            class="modal fade"
+                                            id="editStudentModal{{ $student->id }}"
+                                            tabindex="-1"
+                                        >
+
+                                            <div class="modal-dialog modal-lg">
+
+                                                <div class="modal-content">
+
+
+                                                    <form
+                                                        action="{{
+                                                            route(
+                                                                'management.students.update',
+                                                                $student
+                                                            )
+                                                        }}"
+                                                        method="POST"
                                                     >
 
-                                                        <div
-                                                            class="
-                                                                row
-                                                            "
-                                                        >
+                                                        @csrf
+
+                                                        @method('PUT')
 
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
+                                                        <div class="modal-header">
+
+                                                            <h5 class="modal-title">
+
+                                                                Edit Student
+
+                                                            </h5>
+
+
+                                                            <button
+                                                                type="button"
+                                                                class="close"
+                                                                data-dismiss="modal"
                                                             >
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                <span>
+                                                                    &times;
+                                                                </span>
 
-                                                                    <label>
-                                                                        First Name
-                                                                    </label>
+                                                            </button>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="firstname"
-                                                                        class="form-control"
-                                                                        value="{{ $student->firstname }}"
-                                                                        required
-                                                                    >
+                                                        </div>
+
+
+                                                        <div class="modal-body">
+
+                                                            <div class="row">
+
+
+                                                                <!-- FIRST NAME -->
+
+                                                                <div class="col-md-6">
+
+                                                                    <div class="form-group">
+
+                                                                        <label>
+                                                                            First Name
+                                                                        </label>
+
+                                                                        <input
+                                                                            type="text"
+                                                                            name="firstname"
+                                                                            class="form-control"
+                                                                            value="{{ $student->firstname }}"
+                                                                            required
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- LAST NAME -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        Last Name
-                                                                    </label>
+                                                                        <label>
+                                                                            Last Name
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="lastname"
-                                                                        class="form-control"
-                                                                        value="{{ $student->lastname }}"
-                                                                        required
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="lastname"
+                                                                            class="form-control"
+                                                                            value="{{ $student->lastname }}"
+                                                                            required
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- STUDENT NUMBER -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        Student Number
-                                                                    </label>
+                                                                        <label>
+                                                                            Student Number
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="student_number"
-                                                                        class="form-control"
-                                                                        value="{{ $student->student_number }}"
-                                                                        required
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="student_number"
+                                                                            class="form-control"
+                                                                            value="{{ $student->student_number }}"
+                                                                            required
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- YEAR LEVEL -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        Year Level
-                                                                    </label>
+                                                                        <label>
+                                                                            Year Level
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="year_level"
-                                                                        class="form-control"
-                                                                        value="{{ $student->year_level }}"
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="year_level"
+                                                                            class="form-control"
+                                                                            value="{{ $student->year_level }}"
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- PROGRAM -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        Course / Program
-                                                                    </label>
+                                                                        <label>
+                                                                            Course / Program
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="course_program"
-                                                                        class="form-control"
-                                                                        value="{{ $student->course_program }}"
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="course_program"
+                                                                            class="form-control"
+                                                                            value="{{ $student->course_program }}"
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- RFID -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        RFID UID
-                                                                    </label>
+                                                                        <label>
+                                                                            RFID UID
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="rfid_tag_uid"
-                                                                        class="form-control"
-                                                                        value="{{ $student->rfid_tag_uid }}"
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="rfid_tag_uid"
+                                                                            class="form-control"
+                                                                            value="{{ $student->rfid_tag_uid }}"
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- CONTACT -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-12
-                                                                "
-                                                            >
+                                                                <div class="col-md-12">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        Contact Information
-                                                                    </label>
+                                                                        <label>
+                                                                            Contact Information
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="contact_information"
-                                                                        class="form-control"
-                                                                        value="{{ $student->contact_information }}"
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="contact_information"
+                                                                            class="form-control"
+                                                                            value="{{ $student->contact_information }}"
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
+
 
                                                             </div>
 
                                                         </div>
 
-                                                    </div>
+
+                                                        <div class="modal-footer">
 
 
-                                                    <div
-                                                        class="
-                                                            modal-footer
-                                                        "
-                                                    >
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-secondary"
+                                                                data-dismiss="modal"
+                                                            >
 
-                                                        <button
-                                                            type="button"
-                                                            class="
-                                                                btn
-                                                                btn-secondary
-                                                            "
-                                                            data-dismiss="modal"
-                                                        >
-                                                            Cancel
-                                                        </button>
+                                                                Cancel
 
-                                                        <button
-                                                            type="submit"
-                                                            class="
-                                                                btn
-                                                                btn-primary
-                                                            "
-                                                        >
+                                                            </button>
 
-                                                            Save Changes
 
-                                                        </button>
+                                                            <button
+                                                                type="submit"
+                                                                class="btn btn-primary"
+                                                            >
 
-                                                    </div>
+                                                                <i class="fa fa-save mr-1"></i>
 
-                                                </form>
+                                                                Save Changes
+
+                                                            </button>
+
+
+                                                        </div>
+
+
+                                                    </form>
+
+
+                                                </div>
 
                                             </div>
 
                                         </div>
 
-                                    </div>
+
+                                    @endif
+
 
                                 @endforeach
 
+
                                 </tbody>
+
 
                             </table>
 
                         </div>
 
                     </div>
-
 
 
                     <!-- =================================================
@@ -1052,6 +1068,7 @@
                                 class="table table-hover"
                             >
 
+
                                 <thead>
 
                                     <tr>
@@ -1066,7 +1083,21 @@
 
                                         <th>Contact</th>
 
-                                        <th>Action</th>
+
+                                        <!-- ADMIN ONLY -->
+
+                                        @if(
+                                            strtolower(
+                                                session('session_access_level')
+                                            ) === 'admin'
+                                        )
+
+                                            <th>
+                                                Action
+                                            </th>
+
+                                        @endif
+
 
                                     </tr>
 
@@ -1075,25 +1106,36 @@
 
                                 <tbody>
 
+
                                 @foreach($personnel as $person)
+
 
                                     <tr>
 
+
+                                        <!-- NUMBER -->
+
                                         <td>
+
                                             {{ $loop->iteration }}
+
                                         </td>
 
+
+                                        <!-- PERSONNEL -->
 
                                         <td>
 
                                             <strong class="person-name">
 
                                                 {{ $person->firstname }}
+
                                                 {{ $person->lastname }}
 
                                             </strong>
 
                                             <br>
+
 
                                             <span class="person-number">
 
@@ -1101,13 +1143,15 @@
 
                                                 {{
                                                     $person
-                                                    ->employee_number
+                                                        ->employee_number
                                                 }}
 
                                             </span>
 
                                         </td>
 
+
+                                        <!-- DEPARTMENT -->
 
                                         <td>
 
@@ -1119,11 +1163,11 @@
                                         </td>
 
 
+                                        <!-- RFID -->
+
                                         <td>
 
-                                            @if(
-                                                $person->rfid_tag_uid
-                                            )
+                                            @if($person->rfid_tag_uid)
 
                                                 <span class="rfid-badge">
 
@@ -1137,17 +1181,17 @@
 
                                                     {{
                                                         $person
-                                                        ->rfid_tag_uid
+                                                            ->rfid_tag_uid
                                                     }}
 
                                                 </span>
 
                                             @else
 
-                                                <span
-                                                    class="text-muted"
-                                                >
+                                                <span class="text-muted">
+
                                                     No RFID
+
                                                 </span>
 
                                             @endif
@@ -1155,383 +1199,375 @@
                                         </td>
 
 
+                                        <!-- CONTACT -->
+
                                         <td>
 
                                             {{
                                                 $person
-                                                ->contact_information
+                                                    ->contact_information
                                                 ?? '-'
                                             }}
 
                                         </td>
 
 
-                                        <td
-                                            style="
-                                                min-width:150px;
-                                            "
-                                        >
+                                        <!-- =================================================
+                                             ACTION
+                                             ADMIN ONLY
+                                        ================================================== -->
 
-                                            <!-- EDIT -->
-
-                                            <button
-                                                type="button"
-                                                class="
-                                                    btn
-                                                    btn-info
-                                                    btn-sm
-                                                    action-button
-                                                "
-                                                data-toggle="modal"
-                                                data-target="#editPersonnelModal{{ $person->id }}"
-                                            >
-
-                                                <i
-                                                    class="fa fa-pencil"
-                                                ></i>
-
-                                                Edit
-
-                                            </button>
+                                        @if(
+                                            strtolower(
+                                                session('session_access_level')
+                                            ) === 'admin'
+                                        )
 
 
-                                            <!-- DELETE -->
-
-                                            <form
-                                                action="{{
-                                                    route(
-                                                        'management.personnel.destroy',
-                                                        $person
-                                                    )
-                                                }}"
-                                                method="POST"
-                                                class="d-inline"
-                                                onsubmit="
-                                                    return confirm(
-                                                        'Delete this personnel?'
-                                                    );
+                                            <td
+                                                style="
+                                                    min-width:150px;
                                                 "
                                             >
 
-                                                @csrf
-                                                @method('DELETE')
+
+                                                <!-- EDIT -->
 
                                                 <button
-                                                    type="submit"
+                                                    type="button"
                                                     class="
                                                         btn
-                                                        btn-danger
+                                                        btn-info
                                                         btn-sm
                                                         action-button
                                                     "
+                                                    data-toggle="modal"
+                                                    data-target="#editPersonnelModal{{ $person->id }}"
                                                 >
 
-                                                    <i
-                                                        class="
-                                                            fa
-                                                            fa-trash
-                                                        "
-                                                    ></i>
+                                                    <i class="fa fa-pencil"></i>
+
+                                                    Edit
 
                                                 </button>
 
-                                            </form>
 
-                                        </td>
-
-                                    </tr>
-
-
-                                    <!-- EDIT PERSONNEL MODAL -->
-
-                                    <div
-                                        class="modal fade"
-                                        id="editPersonnelModal{{ $person->id }}"
-                                        tabindex="-1"
-                                    >
-
-                                        <div
-                                            class="
-                                                modal-dialog
-                                                modal-lg
-                                            "
-                                        >
-
-                                            <div class="modal-content">
+                                                <!-- DELETE -->
 
                                                 <form
                                                     action="{{
                                                         route(
-                                                            'management.personnel.update',
+                                                            'management.personnel.destroy',
                                                             $person
                                                         )
                                                     }}"
                                                     method="POST"
+                                                    class="d-inline"
+                                                    onsubmit="
+                                                        return confirm(
+                                                            'Delete this personnel?'
+                                                        );
+                                                    "
                                                 >
 
                                                     @csrf
-                                                    @method('PUT')
+
+                                                    @method('DELETE')
 
 
-                                                    <div
-                                                        class="modal-header"
+                                                    <button
+                                                        type="submit"
+                                                        class="
+                                                            btn
+                                                            btn-danger
+                                                            btn-sm
+                                                            action-button
+                                                        "
                                                     >
 
-                                                        <h5
+                                                        <i
                                                             class="
-                                                                modal-title
+                                                                fa
+                                                                fa-trash
                                                             "
-                                                        >
+                                                        ></i>
 
-                                                            Edit Personnel
-
-                                                        </h5>
-
-                                                        <button
-                                                            type="button"
-                                                            class="close"
-                                                            data-dismiss="modal"
-                                                        >
-
-                                                            <span>
-                                                                &times;
-                                                            </span>
-
-                                                        </button>
-
-                                                    </div>
+                                                    </button>
 
 
-                                                    <div
-                                                        class="modal-body"
+                                                </form>
+
+
+                                            </td>
+
+
+                                        @endif
+
+
+                                    </tr>
+
+
+                                    <!-- =================================================
+                                         EDIT PERSONNEL MODAL
+                                         ADMIN ONLY
+                                    ================================================== -->
+
+                                    @if(
+                                        strtolower(
+                                            session('session_access_level')
+                                        ) === 'admin'
+                                    )
+
+
+                                        <div
+                                            class="modal fade"
+                                            id="editPersonnelModal{{ $person->id }}"
+                                            tabindex="-1"
+                                        >
+
+                                            <div class="modal-dialog modal-lg">
+
+                                                <div class="modal-content">
+
+
+                                                    <form
+                                                        action="{{
+                                                            route(
+                                                                'management.personnel.update',
+                                                                $person
+                                                            )
+                                                        }}"
+                                                        method="POST"
                                                     >
 
-                                                        <div class="row">
+                                                        @csrf
+
+                                                        @method('PUT')
 
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
+                                                        <div class="modal-header">
+
+                                                            <h5 class="modal-title">
+
+                                                                Edit Personnel
+
+                                                            </h5>
+
+
+                                                            <button
+                                                                type="button"
+                                                                class="close"
+                                                                data-dismiss="modal"
                                                             >
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                <span>
+                                                                    &times;
+                                                                </span>
 
-                                                                    <label>
-                                                                        First Name
-                                                                    </label>
+                                                            </button>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="firstname"
-                                                                        class="form-control"
-                                                                        value="{{ $person->firstname }}"
-                                                                        required
-                                                                    >
+                                                        </div>
+
+
+                                                        <div class="modal-body">
+
+                                                            <div class="row">
+
+
+                                                                <!-- FIRST NAME -->
+
+                                                                <div class="col-md-6">
+
+                                                                    <div class="form-group">
+
+                                                                        <label>
+                                                                            First Name
+                                                                        </label>
+
+                                                                        <input
+                                                                            type="text"
+                                                                            name="firstname"
+                                                                            class="form-control"
+                                                                            value="{{ $person->firstname }}"
+                                                                            required
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- LAST NAME -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        Last Name
-                                                                    </label>
+                                                                        <label>
+                                                                            Last Name
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="lastname"
-                                                                        class="form-control"
-                                                                        value="{{ $person->lastname }}"
-                                                                        required
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="lastname"
+                                                                            class="form-control"
+                                                                            value="{{ $person->lastname }}"
+                                                                            required
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- EMPLOYEE NUMBER -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        Employee Number
-                                                                    </label>
+                                                                        <label>
+                                                                            Employee Number
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="employee_number"
-                                                                        class="form-control"
-                                                                        value="{{ $person->employee_number }}"
-                                                                        required
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="employee_number"
+                                                                            class="form-control"
+                                                                            value="{{ $person->employee_number }}"
+                                                                            required
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- DEPARTMENT -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        Department
-                                                                    </label>
+                                                                        <label>
+                                                                            Department
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="department"
-                                                                        class="form-control"
-                                                                        value="{{ $person->department }}"
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="department"
+                                                                            class="form-control"
+                                                                            value="{{ $person->department }}"
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- RFID -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        RFID UID
-                                                                    </label>
+                                                                        <label>
+                                                                            RFID UID
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="rfid_tag_uid"
-                                                                        class="form-control"
-                                                                        value="{{ $person->rfid_tag_uid }}"
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="rfid_tag_uid"
+                                                                            class="form-control"
+                                                                            value="{{ $person->rfid_tag_uid }}"
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
 
-                                                            </div>
 
+                                                                <!-- CONTACT -->
 
-                                                            <div
-                                                                class="
-                                                                    col-md-6
-                                                                "
-                                                            >
+                                                                <div class="col-md-6">
 
-                                                                <div
-                                                                    class="
-                                                                        form-group
-                                                                    "
-                                                                >
+                                                                    <div class="form-group">
 
-                                                                    <label>
-                                                                        Contact Information
-                                                                    </label>
+                                                                        <label>
+                                                                            Contact Information
+                                                                        </label>
 
-                                                                    <input
-                                                                        type="text"
-                                                                        name="contact_information"
-                                                                        class="form-control"
-                                                                        value="{{ $person->contact_information }}"
-                                                                    >
+                                                                        <input
+                                                                            type="text"
+                                                                            name="contact_information"
+                                                                            class="form-control"
+                                                                            value="{{ $person->contact_information }}"
+                                                                        >
+
+                                                                    </div>
 
                                                                 </div>
+
 
                                                             </div>
 
                                                         </div>
 
-                                                    </div>
+
+                                                        <div class="modal-footer">
 
 
-                                                    <div
-                                                        class="
-                                                            modal-footer
-                                                        "
-                                                    >
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-secondary"
+                                                                data-dismiss="modal"
+                                                            >
 
-                                                        <button
-                                                            type="button"
-                                                            class="
-                                                                btn
-                                                                btn-secondary
-                                                            "
-                                                            data-dismiss="modal"
-                                                        >
-                                                            Cancel
-                                                        </button>
+                                                                Cancel
 
-                                                        <button
-                                                            type="submit"
-                                                            class="
-                                                                btn
-                                                                btn-success
-                                                            "
-                                                        >
+                                                            </button>
 
-                                                            Save Changes
 
-                                                        </button>
+                                                            <button
+                                                                type="submit"
+                                                                class="btn btn-success"
+                                                            >
 
-                                                    </div>
+                                                                <i class="fa fa-save mr-1"></i>
 
-                                                </form>
+                                                                Save Changes
+
+                                                            </button>
+
+
+                                                        </div>
+
+
+                                                    </form>
+
+
+                                                </div>
 
                                             </div>
 
                                         </div>
 
-                                    </div>
+
+                                    @endif
+
 
                                 @endforeach
 
+
                                 </tbody>
+
 
                             </table>
 
                         </div>
 
                     </div>
+
 
                 </div>
 
@@ -1544,9 +1580,9 @@
 </div>
 
 
-
 <!-- ================================================================
      ADD STUDENT MODAL
+     ADMIN + STAFF
 ================================================================ -->
 
 <div
@@ -1558,6 +1594,7 @@
     <div class="modal-dialog modal-lg">
 
         <div class="modal-content">
+
 
             <form
                 action="{{
@@ -1587,13 +1624,16 @@
 
                     </h5>
 
+
                     <button
                         type="button"
                         class="close"
                         data-dismiss="modal"
                     >
 
-                        <span>&times;</span>
+                        <span>
+                            &times;
+                        </span>
 
                     </button>
 
@@ -1604,6 +1644,8 @@
 
                     <div class="row">
 
+
+                        <!-- FIRST NAME -->
 
                         <div class="col-md-6">
 
@@ -1617,6 +1659,7 @@
                                     type="text"
                                     name="firstname"
                                     class="form-control"
+                                    value="{{ old('firstname') }}"
                                     required
                                 >
 
@@ -1624,6 +1667,8 @@
 
                         </div>
 
+
+                        <!-- LAST NAME -->
 
                         <div class="col-md-6">
 
@@ -1637,6 +1682,7 @@
                                     type="text"
                                     name="lastname"
                                     class="form-control"
+                                    value="{{ old('lastname') }}"
                                     required
                                 >
 
@@ -1644,6 +1690,8 @@
 
                         </div>
 
+
+                        <!-- STUDENT NUMBER -->
 
                         <div class="col-md-6">
 
@@ -1657,6 +1705,7 @@
                                     type="text"
                                     name="student_number"
                                     class="form-control"
+                                    value="{{ old('student_number') }}"
                                     required
                                 >
 
@@ -1664,6 +1713,8 @@
 
                         </div>
 
+
+                        <!-- YEAR LEVEL -->
 
                         <div class="col-md-6">
 
@@ -1682,21 +1733,38 @@
                                         Select Year Level
                                     </option>
 
-                                    <option value="1st Year">
+
+                                    <option
+                                        value="1st Year"
+                                        {{ old('year_level') === '1st Year' ? 'selected' : '' }}
+                                    >
                                         1st Year
                                     </option>
 
-                                    <option value="2nd Year">
+
+                                    <option
+                                        value="2nd Year"
+                                        {{ old('year_level') === '2nd Year' ? 'selected' : '' }}
+                                    >
                                         2nd Year
                                     </option>
 
-                                    <option value="3rd Year">
+
+                                    <option
+                                        value="3rd Year"
+                                        {{ old('year_level') === '3rd Year' ? 'selected' : '' }}
+                                    >
                                         3rd Year
                                     </option>
 
-                                    <option value="4th Year">
+
+                                    <option
+                                        value="4th Year"
+                                        {{ old('year_level') === '4th Year' ? 'selected' : '' }}
+                                    >
                                         4th Year
                                     </option>
+
 
                                 </select>
 
@@ -1704,6 +1772,8 @@
 
                         </div>
 
+
+                        <!-- COURSE -->
 
                         <div class="col-md-6">
 
@@ -1717,6 +1787,7 @@
                                     type="text"
                                     name="course_program"
                                     class="form-control"
+                                    value="{{ old('course_program') }}"
                                     placeholder="Example: BSIT"
                                 >
 
@@ -1724,6 +1795,8 @@
 
                         </div>
 
+
+                        <!-- RFID -->
 
                         <div class="col-md-6">
 
@@ -1737,6 +1810,7 @@
                                     type="text"
                                     name="rfid_tag_uid"
                                     class="form-control"
+                                    value="{{ old('rfid_tag_uid') }}"
                                     placeholder="Scan or enter RFID"
                                 >
 
@@ -1744,6 +1818,8 @@
 
                         </div>
 
+
+                        <!-- CONTACT -->
 
                         <div class="col-md-12">
 
@@ -1757,12 +1833,14 @@
                                     type="text"
                                     name="contact_information"
                                     class="form-control"
+                                    value="{{ old('contact_information') }}"
                                     placeholder="Phone number or email"
                                 >
 
                             </div>
 
                         </div>
+
 
                     </div>
 
@@ -1771,13 +1849,17 @@
 
                 <div class="modal-footer">
 
+
                     <button
                         type="button"
                         class="btn btn-secondary"
                         data-dismiss="modal"
                     >
+
                         Cancel
+
                     </button>
+
 
                     <button
                         type="submit"
@@ -1790,9 +1872,12 @@
 
                     </button>
 
+
                 </div>
 
+
             </form>
+
 
         </div>
 
@@ -1801,9 +1886,9 @@
 </div>
 
 
-
 <!-- ================================================================
      ADD PERSONNEL MODAL
+     ADMIN + STAFF
 ================================================================ -->
 
 <div
@@ -1815,6 +1900,7 @@
     <div class="modal-dialog modal-lg">
 
         <div class="modal-content">
+
 
             <form
                 action="{{
@@ -1838,13 +1924,16 @@
 
                     </h5>
 
+
                     <button
                         type="button"
                         class="close"
                         data-dismiss="modal"
                     >
 
-                        <span>&times;</span>
+                        <span>
+                            &times;
+                        </span>
 
                     </button>
 
@@ -1855,6 +1944,8 @@
 
                     <div class="row">
 
+
+                        <!-- FIRST NAME -->
 
                         <div class="col-md-6">
 
@@ -1868,6 +1959,7 @@
                                     type="text"
                                     name="firstname"
                                     class="form-control"
+                                    value="{{ old('firstname') }}"
                                     required
                                 >
 
@@ -1875,6 +1967,8 @@
 
                         </div>
 
+
+                        <!-- LAST NAME -->
 
                         <div class="col-md-6">
 
@@ -1888,6 +1982,7 @@
                                     type="text"
                                     name="lastname"
                                     class="form-control"
+                                    value="{{ old('lastname') }}"
                                     required
                                 >
 
@@ -1895,6 +1990,8 @@
 
                         </div>
 
+
+                        <!-- EMPLOYEE NUMBER -->
 
                         <div class="col-md-6">
 
@@ -1908,6 +2005,7 @@
                                     type="text"
                                     name="employee_number"
                                     class="form-control"
+                                    value="{{ old('employee_number') }}"
                                     required
                                 >
 
@@ -1915,6 +2013,8 @@
 
                         </div>
 
+
+                        <!-- DEPARTMENT -->
 
                         <div class="col-md-6">
 
@@ -1928,12 +2028,15 @@
                                     type="text"
                                     name="department"
                                     class="form-control"
+                                    value="{{ old('department') }}"
                                 >
 
                             </div>
 
                         </div>
 
+
+                        <!-- RFID -->
 
                         <div class="col-md-6">
 
@@ -1947,6 +2050,7 @@
                                     type="text"
                                     name="rfid_tag_uid"
                                     class="form-control"
+                                    value="{{ old('rfid_tag_uid') }}"
                                     placeholder="Scan or enter RFID"
                                 >
 
@@ -1954,6 +2058,8 @@
 
                         </div>
 
+
+                        <!-- CONTACT -->
 
                         <div class="col-md-6">
 
@@ -1967,11 +2073,13 @@
                                     type="text"
                                     name="contact_information"
                                     class="form-control"
+                                    value="{{ old('contact_information') }}"
                                 >
 
                             </div>
 
                         </div>
+
 
                     </div>
 
@@ -1980,13 +2088,17 @@
 
                 <div class="modal-footer">
 
+
                     <button
                         type="button"
                         class="btn btn-secondary"
                         data-dismiss="modal"
                     >
+
                         Cancel
+
                     </button>
+
 
                     <button
                         type="submit"
@@ -1999,9 +2111,12 @@
 
                     </button>
 
+
                 </div>
 
+
             </form>
+
 
         </div>
 
@@ -2030,6 +2145,13 @@
 
 $(document).ready(function () {
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | STUDENT DATATABLE
+    |--------------------------------------------------------------------------
+    */
+
     $('#studentManagementTable').DataTable({
 
         pageLength: 10,
@@ -2041,6 +2163,12 @@ $(document).ready(function () {
     });
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | PERSONNEL DATATABLE
+    |--------------------------------------------------------------------------
+    */
+
     $('#personnelManagementTable').DataTable({
 
         pageLength: 10,
@@ -2050,6 +2178,7 @@ $(document).ready(function () {
         ]
 
     });
+
 
 });
 

@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class BookBorrow extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'book_id',
         'borrower_id',
+        'borrower_type',
         'borrowed_at',
         'due_date',
         'returned_at',
@@ -16,40 +20,31 @@ class BookBorrow extends Model
         'remarks',
     ];
 
-
     protected $casts = [
         'borrowed_at' => 'datetime',
         'due_date' => 'datetime',
         'returned_at' => 'datetime',
     ];
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | BOOK
-    |--------------------------------------------------------------------------
-    */
-
     public function book()
     {
-        return $this->belongsTo(
-            Book::class,
-            'book_id'
-        );
+        return $this->belongsTo(Book::class);
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | BORROWER / STUDENT
-    |--------------------------------------------------------------------------
-    */
-
-    public function borrower()
+    public function getBorrowerRecordAttribute()
     {
-        return $this->belongsTo(
-            Student::class,
-            'borrower_id'
-        );
+        if ($this->borrower_type === 'student') {
+            return Student::find(
+                $this->borrower_id
+            );
+        }
+
+        if ($this->borrower_type === 'personnel') {
+            return Personnel::find(
+                $this->borrower_id
+            );
+        }
+
+        return null;
     }
 }

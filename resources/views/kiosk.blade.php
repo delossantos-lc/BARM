@@ -32,7 +32,24 @@
     >
 
 
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
     <style>
+
+        /* =====================================================
+           BODY
+        ====================================================== */
 
         body {
 
@@ -46,25 +63,40 @@
                 );
 
             font-family:
+                'Montserrat',
                 Arial,
                 Helvetica,
                 sans-serif;
+
         }
 
+
+        /* =====================================================
+           TITLE
+        ====================================================== */
 
         .title {
 
-            font-size: 4.5rem;
+            font-size: 3.8rem;
 
-            font-weight: 700;
+            font-weight: 500;
 
-            letter-spacing: 2px;
+            letter-spacing: 5px;
 
-            color: #000;
+            line-height: 1.4;
+
+            color: #252525;
 
             margin-bottom: 60px;
+
+            text-transform: uppercase;
+
         }
 
+
+        /* =====================================================
+           LOGO
+        ====================================================== */
 
         .kiosk-logo {
 
@@ -77,56 +109,191 @@
             margin:
                 0 auto
                 30px auto;
+
         }
 
+
+        /* =====================================================
+           KIOSK BUTTON
+        ====================================================== */
 
         .kiosk-box {
 
             width: 100%;
 
-            height: 320px;
+            height: 280px;
 
-            border: 5px solid #000;
+            border: 2px solid
+                rgba(255, 255, 255, 0.65);
 
-            border-radius: 45px;
+            border-radius: 25px;
 
-            background: #fff;
+            background:
+                linear-gradient(
+                    135deg,
+                    #F3A8BE,
+                    #E98EAC
+                );
 
-            color: #000;
+            color: #ffffff;
 
             text-decoration: none;
 
-            font-size: 4rem;
+            font-family:
+                'Montserrat',
+                Arial,
+                Helvetica,
+                sans-serif;
 
-            font-weight: 700;
+            font-size: 3rem;
 
-            transition: .25s;
+            font-weight: 600;
+
+            letter-spacing: 8px;
+
+            text-transform: uppercase;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 18px 35px
+                rgba(128, 62, 84, 0.18);
+
+            transition:
+                background 0.25s ease,
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+
         }
 
+
+        /* =====================================================
+           BUTTON INNER CONTENT
+        ====================================================== */
+
+        .kiosk-button-content {
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 25px;
+
+        }
+
+
+        /* =====================================================
+           BUTTON ICON
+        ====================================================== */
+
+        .kiosk-icon {
+
+            width: 85px;
+
+            height: 85px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            border:
+
+                3px solid
+                rgba(255, 255, 255, 0.9);
+
+            border-radius: 50%;
+
+            font-size: 2.5rem;
+
+            color: #ffffff;
+
+        }
+
+
+        /* =====================================================
+           BUTTON TEXT
+        ====================================================== */
+
+        .kiosk-button-text {
+
+            display: block;
+
+            font-size: 3rem;
+
+            font-weight: 600;
+
+            letter-spacing: 8px;
+
+            line-height: 1;
+
+        }
+
+
+        /* =====================================================
+           BUTTON HOVER
+        ====================================================== */
 
         .kiosk-box:hover {
 
-            background: #000;
+            background:
+                linear-gradient(
+                    135deg,
+                    #EC97B2,
+                    #DF789B
+                );
 
-            color: #fff;
+            color: #ffffff;
 
             transform:
-                translateY(-8px);
+                translateY(-7px);
+
+            box-shadow:
+                0 25px 45px
+                rgba(128, 62, 84, 0.25);
+
         }
 
+
+        /* =====================================================
+           BUTTON ACTIVE
+        ====================================================== */
 
         .kiosk-box:active {
 
             transform:
-                scale(.98);
+                scale(0.97);
+
+            box-shadow:
+                0 10px 20px
+                rgba(128, 62, 84, 0.20);
+
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | INVISIBLE RFID SCANNER
-        |--------------------------------------------------------------------------
-        */
+        /* =====================================================
+           BUTTON FOCUS
+        ====================================================== */
+
+        .kiosk-box:focus {
+
+            outline:
+                5px solid
+                rgba(222, 105, 145, 0.25);
+
+            outline-offset: 6px;
+
+        }
+
+
+        /* =====================================================
+           INVISIBLE RFID SCANNER
+        ====================================================== */
 
         #rfidScanner {
 
@@ -149,34 +316,118 @@
             margin: 0;
 
             outline: none;
+
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | MOBILE
-        |--------------------------------------------------------------------------
-        */
+        /* =====================================================
+           MOBILE
+        ====================================================== */
 
         @media(max-width: 992px) {
 
             .title {
 
-                font-size: 3rem;
+                font-size: 2.7rem;
+
+                letter-spacing: 3px;
+
+                margin-bottom: 40px;
+
             }
 
 
             .kiosk-logo {
 
                 width: 150px;
+
             }
 
 
             .kiosk-box {
 
-                height: 220px;
+                height: 210px;
 
-                font-size: 2.5rem;
+                border-radius: 20px;
+
+            }
+
+
+            .kiosk-icon {
+
+                width: 65px;
+
+                height: 65px;
+
+                font-size: 2rem;
+
+            }
+
+
+            .kiosk-button-text {
+
+                font-size: 2.2rem;
+
+                letter-spacing: 5px;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SMALL MOBILE
+        ====================================================== */
+
+        @media(max-width: 576px) {
+
+            .title {
+
+                font-size: 2rem;
+
+                letter-spacing: 2px;
+
+            }
+
+
+            .kiosk-logo {
+
+                width: 120px;
+
+            }
+
+
+            .kiosk-box {
+
+                height: 170px;
+
+            }
+
+
+            .kiosk-button-content {
+
+                gap: 15px;
+
+            }
+
+
+            .kiosk-icon {
+
+                width: 55px;
+
+                height: 55px;
+
+                font-size: 1.6rem;
+
+            }
+
+
+            .kiosk-button-text {
+
+                font-size: 1.7rem;
+
+                letter-spacing: 4px;
+
             }
 
         }
@@ -272,16 +523,31 @@
 
                     <button
                         type="submit"
-                        class="
-                            kiosk-box
-                            d-flex
-                            justify-content-center
-                            align-items-center
-                            shadow
-                        "
+                        class="kiosk-box"
                     >
 
-                        BORROW
+                        <div class="kiosk-button-content">
+
+
+                            <!-- Book Icon -->
+
+                            <div class="kiosk-icon">
+
+                                &#128214;
+
+                            </div>
+
+
+                            <!-- Text -->
+
+                            <span class="kiosk-button-text">
+
+                                BORROW
+
+                            </span>
+
+
+                        </div>
 
                     </button>
 
@@ -309,16 +575,31 @@
 
                     <button
                         type="submit"
-                        class="
-                            kiosk-box
-                            d-flex
-                            justify-content-center
-                            align-items-center
-                            shadow
-                        "
+                        class="kiosk-box"
                     >
 
-                        RETURN
+                        <div class="kiosk-button-content">
+
+
+                            <!-- Return Icon -->
+
+                            <div class="kiosk-icon">
+
+                                &#8634;
+
+                            </div>
+
+
+                            <!-- Text -->
+
+                            <span class="kiosk-button-text">
+
+                                RETURN
+
+                            </span>
+
+
+                        </div>
 
                     </button>
 
@@ -355,6 +636,7 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
+
     /*
     |--------------------------------------------------------------------------
     | Elements
@@ -363,6 +645,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const scanner =
         document.getElementById('rfidScanner');
+
 
     const csrfToken =
         document
@@ -426,9 +709,6 @@ document.addEventListener('DOMContentLoaded', function () {
     |--------------------------------------------------------------------------
     | Refocus After Clicking Empty Area
     |--------------------------------------------------------------------------
-    |
-    | We avoid immediately stealing focus from buttons.
-    |
     */
 
     document.addEventListener('click', function (event) {
@@ -453,13 +733,6 @@ document.addEventListener('DOMContentLoaded', function () {
     |--------------------------------------------------------------------------
     | Detect RFID Typing
     |--------------------------------------------------------------------------
-    |
-    | Most USB RFID readers work like keyboards.
-    |
-    | Example:
-    |
-    | 2088350422
-    |
     */
 
     scanner.addEventListener('input', function () {
@@ -510,6 +783,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function processRFID() {
 
+
         /*
          * Prevent double scan/request
          */
@@ -556,6 +830,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
 
+
             /*
             |--------------------------------------------------------------------------
             | Send RFID To Laravel
@@ -563,7 +838,9 @@ document.addEventListener('DOMContentLoaded', function () {
             */
 
             const response = await fetch(
+
                 '{{ route("attendance.scan") }}',
+
                 {
 
                     method: 'POST',
@@ -593,6 +870,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
 
                 }
+
             );
 
 
@@ -636,8 +914,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!response.ok) {
 
                 throw new Error(
+
                     data.message ??
                     'Unable to record attendance.'
+
                 );
 
             }
@@ -714,7 +994,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
 
+
         catch (error) {
+
 
             /*
             |--------------------------------------------------------------------------
@@ -734,7 +1016,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
 
+
         finally {
+
 
             /*
             |--------------------------------------------------------------------------

@@ -28,6 +28,21 @@ class Book extends Model
         'issn',
         'lccn',
         'subjects',
-        'additional_details',
+        'additional_details'
     ];
+
+    public function copies()
+    {
+        return $this->hasMany(BookCopy::class);
+    }
+
+    public function borrowings()
+    {
+        return $this->hasMany(BookBorrow::class);
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(BookReservation::class);
+    }
 }

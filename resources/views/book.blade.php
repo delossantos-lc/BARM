@@ -332,6 +332,7 @@
 
 
                 <!-- Automatically open if validation failed -->
+
                 <div
                     class="
                         collapse
@@ -1011,7 +1012,10 @@
                                     <td>
 
 
-                                        <!-- VIEW -->
+                                        <!-- =================================================
+                                             VIEW
+                                             ADMIN + STAFF
+                                        ================================================== -->
 
                                         <button
                                             type="button"
@@ -1030,31 +1034,36 @@
                                         </button>
 
 
-                                        <!-- EDIT -->
-
-                                        <button
-                                            type="button"
-                                            class="
-                                                btn
-                                                btn-warning
-                                                action-btn
-                                            "
-                                            title="Edit"
-                                            data-toggle="modal"
-                                            data-target="#editBook{{ $book->id }}"
-                                        >
-
-                                            <i class="fa fa-pencil"></i>
-
-                                        </button>
-
-
-                                        <!-- DELETE -->
+                                        <!-- =================================================
+                                             ADMIN ONLY
+                                        ================================================== -->
 
                                         @if(
                                             auth()->check() &&
                                             auth()->user()->access_level === 'admin'
                                         )
+
+
+                                            <!-- EDIT -->
+
+                                            <button
+                                                type="button"
+                                                class="
+                                                    btn
+                                                    btn-warning
+                                                    action-btn
+                                                "
+                                                title="Edit"
+                                                data-toggle="modal"
+                                                data-target="#editBook{{ $book->id }}"
+                                            >
+
+                                                <i class="fa fa-pencil"></i>
+
+                                            </button>
+
+
+                                            <!-- DELETE -->
 
                                             <form
                                                 action="{{ route('books.destroy', $book->id) }}"
@@ -1084,6 +1093,7 @@
 
                                             </form>
 
+
                                         @endif
 
 
@@ -1094,6 +1104,7 @@
 
                                 <!-- =================================================
                                      VIEW MODAL
+                                     ADMIN + STAFF
                                 ================================================== -->
 
                                 <div
@@ -1449,386 +1460,401 @@
 
                                 <!-- =================================================
                                      EDIT MODAL
+                                     ADMIN ONLY
                                 ================================================== -->
 
-                                <div
-                                    class="modal fade"
-                                    id="editBook{{ $book->id }}"
-                                    tabindex="-1"
-                                    role="dialog"
-                                >
+                                @if(
+                                    auth()->check() &&
+                                    auth()->user()->access_level === 'admin'
+                                )
 
 
                                     <div
-                                        class="
-                                            modal-dialog
-                                            modal-xl
-                                        "
+                                        class="modal fade"
+                                        id="editBook{{ $book->id }}"
+                                        tabindex="-1"
+                                        role="dialog"
                                     >
 
 
-                                        <div class="modal-content">
+                                        <div
+                                            class="
+                                                modal-dialog
+                                                modal-xl
+                                            "
+                                        >
 
 
-                                            <form
-                                                action="{{ route('books.update', $book->id) }}"
-                                                method="POST"
-                                            >
-
-                                                @csrf
-
-                                                @method('PUT')
+                                            <div class="modal-content">
 
 
-                                                <div class="modal-header">
+                                                <form
+                                                    action="{{ route('books.update', $book->id) }}"
+                                                    method="POST"
+                                                >
+
+                                                    @csrf
+
+                                                    @method('PUT')
 
 
-                                                    <h5 class="modal-title">
-
-                                                        <i class="fa fa-pencil mr-2"></i>
-
-                                                        Edit Book
-
-                                                    </h5>
+                                                    <div class="modal-header">
 
 
-                                                    <button
-                                                        type="button"
-                                                        class="close"
-                                                        data-dismiss="modal"
-                                                    >
+                                                        <h5 class="modal-title">
 
-                                                        <span>&times;</span>
+                                                            <i class="fa fa-pencil mr-2"></i>
 
-                                                    </button>
+                                                            Edit Book
 
-                                                </div>
+                                                        </h5>
 
 
-                                                <div class="modal-body">
+                                                        <button
+                                                            type="button"
+                                                            class="close"
+                                                            data-dismiss="modal"
+                                                        >
+
+                                                            <span>&times;</span>
+
+                                                        </button>
+
+                                                    </div>
 
 
-                                                    <div class="row">
+                                                    <div class="modal-body">
 
 
-                                                        <!-- TITLE -->
+                                                        <div class="row">
 
-                                                        <div class="col-lg-6 mb-3">
 
-                                                            <label>
-                                                                Title
-                                                                <span class="text-danger">*</span>
-                                                            </label>
+                                                            <!-- TITLE -->
 
-                                                            <textarea
-                                                                name="title"
-                                                                class="form-control"
-                                                                required
-                                                            >{{ $book->title }}</textarea>
+                                                            <div class="col-lg-6 mb-3">
+
+                                                                <label>
+
+                                                                    Title
+
+                                                                    <span class="text-danger">
+                                                                        *
+                                                                    </span>
+
+                                                                </label>
+
+                                                                <textarea
+                                                                    name="title"
+                                                                    class="form-control"
+                                                                    required
+                                                                >{{ $book->title }}</textarea>
+
+                                                            </div>
+
+
+                                                            <!-- AUTHOR -->
+
+                                                            <div class="col-lg-6 mb-3">
+
+                                                                <label>
+                                                                    Author
+                                                                </label>
+
+                                                                <textarea
+                                                                    name="author"
+                                                                    class="form-control"
+                                                                >{{ $book->author }}</textarea>
+
+                                                            </div>
+
+
+                                                            <!-- CALL NUMBER -->
+
+                                                            <div class="col-lg-4 mb-3">
+
+                                                                <label>
+                                                                    Call Number
+                                                                </label>
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="call_number"
+                                                                    value="{{ $book->call_number }}"
+                                                                    class="form-control"
+                                                                >
+
+                                                            </div>
+
+
+                                                            <!-- SUBLOCATION -->
+
+                                                            <div class="col-lg-4 mb-3">
+
+                                                                <label>
+                                                                    Sublocation
+                                                                </label>
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="sublocation"
+                                                                    value="{{ $book->sublocation }}"
+                                                                    class="form-control"
+                                                                >
+
+                                                            </div>
+
+
+                                                            <!-- YEAR -->
+
+                                                            <div class="col-lg-4 mb-3">
+
+                                                                <label>
+                                                                    Year
+                                                                </label>
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="year"
+                                                                    value="{{ $book->year }}"
+                                                                    class="form-control"
+                                                                >
+
+                                                            </div>
+
+
+                                                            <!-- PUBLISHER -->
+
+                                                            <div class="col-lg-6 mb-3">
+
+                                                                <label>
+                                                                    Publisher
+                                                                </label>
+
+                                                                <textarea
+                                                                    name="publisher"
+                                                                    class="form-control"
+                                                                >{{ $book->publisher }}</textarea>
+
+                                                            </div>
+
+
+                                                            <!-- FORMAT -->
+
+                                                            <div class="col-lg-6 mb-3">
+
+                                                                <label>
+                                                                    Format
+                                                                </label>
+
+                                                                <textarea
+                                                                    name="format"
+                                                                    class="form-control"
+                                                                >{{ $book->format }}</textarea>
+
+                                                            </div>
+
+
+                                                            <!-- EDITION -->
+
+                                                            <div class="col-lg-3 mb-3">
+
+                                                                <label>
+                                                                    Edition
+                                                                </label>
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="edition"
+                                                                    value="{{ $book->edition }}"
+                                                                    class="form-control"
+                                                                >
+
+                                                            </div>
+
+
+                                                            <!-- CONTENT TYPE -->
+
+                                                            <div class="col-lg-3 mb-3">
+
+                                                                <label>
+                                                                    Content Type
+                                                                </label>
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="content_type"
+                                                                    value="{{ $book->content_type }}"
+                                                                    class="form-control"
+                                                                >
+
+                                                            </div>
+
+
+                                                            <!-- MEDIA TYPE -->
+
+                                                            <div class="col-lg-3 mb-3">
+
+                                                                <label>
+                                                                    Media Type
+                                                                </label>
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="media_type"
+                                                                    value="{{ $book->media_type }}"
+                                                                    class="form-control"
+                                                                >
+
+                                                            </div>
+
+
+                                                            <!-- CARRIER TYPE -->
+
+                                                            <div class="col-lg-3 mb-3">
+
+                                                                <label>
+                                                                    Carrier Type
+                                                                </label>
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="carrier_type"
+                                                                    value="{{ $book->carrier_type }}"
+                                                                    class="form-control"
+                                                                >
+
+                                                            </div>
+
+
+                                                            <!-- ISBN -->
+
+                                                            <div class="col-lg-4 mb-3">
+
+                                                                <label>
+                                                                    ISBN
+                                                                </label>
+
+                                                                <textarea
+                                                                    name="isbn"
+                                                                    class="form-control"
+                                                                >{{ $book->isbn }}</textarea>
+
+                                                            </div>
+
+
+                                                            <!-- ISSN -->
+
+                                                            <div class="col-lg-4 mb-3">
+
+                                                                <label>
+                                                                    ISSN
+                                                                </label>
+
+                                                                <textarea
+                                                                    name="issn"
+                                                                    class="form-control"
+                                                                >{{ $book->issn }}</textarea>
+
+                                                            </div>
+
+
+                                                            <!-- LCCN -->
+
+                                                            <div class="col-lg-4 mb-3">
+
+                                                                <label>
+                                                                    LCCN
+                                                                </label>
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="lccn"
+                                                                    value="{{ $book->lccn }}"
+                                                                    class="form-control"
+                                                                >
+
+                                                            </div>
+
+
+                                                            <!-- SUBJECTS -->
+
+                                                            <div class="col-lg-6 mb-3">
+
+                                                                <label>
+                                                                    Subjects
+                                                                </label>
+
+                                                                <textarea
+                                                                    name="subjects"
+                                                                    rows="4"
+                                                                    class="form-control"
+                                                                >{{ $book->subjects }}</textarea>
+
+                                                            </div>
+
+
+                                                            <!-- DETAILS -->
+
+                                                            <div class="col-lg-6 mb-3">
+
+                                                                <label>
+                                                                    Additional Details
+                                                                </label>
+
+                                                                <textarea
+                                                                    name="additional_details"
+                                                                    rows="4"
+                                                                    class="form-control"
+                                                                >{{ $book->additional_details }}</textarea>
+
+                                                            </div>
+
 
                                                         </div>
 
+                                                    </div>
 
-                                                        <!-- AUTHOR -->
 
-                                                        <div class="col-lg-6 mb-3">
+                                                    <div class="modal-footer">
 
-                                                            <label>
-                                                                Author
-                                                            </label>
 
-                                                            <textarea
-                                                                name="author"
-                                                                class="form-control"
-                                                            >{{ $book->author }}</textarea>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-secondary"
+                                                            data-dismiss="modal"
+                                                        >
 
-                                                        </div>
+                                                            Cancel
 
+                                                        </button>
 
-                                                        <!-- CALL NUMBER -->
 
-                                                        <div class="col-lg-4 mb-3">
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-primary"
+                                                        >
 
-                                                            <label>
-                                                                Call Number
-                                                            </label>
+                                                            <i class="fa fa-save mr-1"></i>
 
-                                                            <input
-                                                                type="text"
-                                                                name="call_number"
-                                                                value="{{ $book->call_number }}"
-                                                                class="form-control"
-                                                            >
+                                                            Save Changes
 
-                                                        </div>
-
-
-                                                        <!-- SUBLOCATION -->
-
-                                                        <div class="col-lg-4 mb-3">
-
-                                                            <label>
-                                                                Sublocation
-                                                            </label>
-
-                                                            <input
-                                                                type="text"
-                                                                name="sublocation"
-                                                                value="{{ $book->sublocation }}"
-                                                                class="form-control"
-                                                            >
-
-                                                        </div>
-
-
-                                                        <!-- YEAR -->
-
-                                                        <div class="col-lg-4 mb-3">
-
-                                                            <label>
-                                                                Year
-                                                            </label>
-
-                                                            <input
-                                                                type="text"
-                                                                name="year"
-                                                                value="{{ $book->year }}"
-                                                                class="form-control"
-                                                            >
-
-                                                        </div>
-
-
-                                                        <!-- PUBLISHER -->
-
-                                                        <div class="col-lg-6 mb-3">
-
-                                                            <label>
-                                                                Publisher
-                                                            </label>
-
-                                                            <textarea
-                                                                name="publisher"
-                                                                class="form-control"
-                                                            >{{ $book->publisher }}</textarea>
-
-                                                        </div>
-
-
-                                                        <!-- FORMAT -->
-
-                                                        <div class="col-lg-6 mb-3">
-
-                                                            <label>
-                                                                Format
-                                                            </label>
-
-                                                            <textarea
-                                                                name="format"
-                                                                class="form-control"
-                                                            >{{ $book->format }}</textarea>
-
-                                                        </div>
-
-
-                                                        <!-- EDITION -->
-
-                                                        <div class="col-lg-3 mb-3">
-
-                                                            <label>
-                                                                Edition
-                                                            </label>
-
-                                                            <input
-                                                                type="text"
-                                                                name="edition"
-                                                                value="{{ $book->edition }}"
-                                                                class="form-control"
-                                                            >
-
-                                                        </div>
-
-
-                                                        <!-- CONTENT TYPE -->
-
-                                                        <div class="col-lg-3 mb-3">
-
-                                                            <label>
-                                                                Content Type
-                                                            </label>
-
-                                                            <input
-                                                                type="text"
-                                                                name="content_type"
-                                                                value="{{ $book->content_type }}"
-                                                                class="form-control"
-                                                            >
-
-                                                        </div>
-
-
-                                                        <!-- MEDIA TYPE -->
-
-                                                        <div class="col-lg-3 mb-3">
-
-                                                            <label>
-                                                                Media Type
-                                                            </label>
-
-                                                            <input
-                                                                type="text"
-                                                                name="media_type"
-                                                                value="{{ $book->media_type }}"
-                                                                class="form-control"
-                                                            >
-
-                                                        </div>
-
-
-                                                        <!-- CARRIER TYPE -->
-
-                                                        <div class="col-lg-3 mb-3">
-
-                                                            <label>
-                                                                Carrier Type
-                                                            </label>
-
-                                                            <input
-                                                                type="text"
-                                                                name="carrier_type"
-                                                                value="{{ $book->carrier_type }}"
-                                                                class="form-control"
-                                                            >
-
-                                                        </div>
-
-
-                                                        <!-- ISBN -->
-
-                                                        <div class="col-lg-4 mb-3">
-
-                                                            <label>
-                                                                ISBN
-                                                            </label>
-
-                                                            <textarea
-                                                                name="isbn"
-                                                                class="form-control"
-                                                            >{{ $book->isbn }}</textarea>
-
-                                                        </div>
-
-
-                                                        <!-- ISSN -->
-
-                                                        <div class="col-lg-4 mb-3">
-
-                                                            <label>
-                                                                ISSN
-                                                            </label>
-
-                                                            <textarea
-                                                                name="issn"
-                                                                class="form-control"
-                                                            >{{ $book->issn }}</textarea>
-
-                                                        </div>
-
-
-                                                        <!-- LCCN -->
-
-                                                        <div class="col-lg-4 mb-3">
-
-                                                            <label>
-                                                                LCCN
-                                                            </label>
-
-                                                            <input
-                                                                type="text"
-                                                                name="lccn"
-                                                                value="{{ $book->lccn }}"
-                                                                class="form-control"
-                                                            >
-
-                                                        </div>
-
-
-                                                        <!-- SUBJECTS -->
-
-                                                        <div class="col-lg-6 mb-3">
-
-                                                            <label>
-                                                                Subjects
-                                                            </label>
-
-                                                            <textarea
-                                                                name="subjects"
-                                                                rows="4"
-                                                                class="form-control"
-                                                            >{{ $book->subjects }}</textarea>
-
-                                                        </div>
-
-
-                                                        <!-- DETAILS -->
-
-                                                        <div class="col-lg-6 mb-3">
-
-                                                            <label>
-                                                                Additional Details
-                                                            </label>
-
-                                                            <textarea
-                                                                name="additional_details"
-                                                                rows="4"
-                                                                class="form-control"
-                                                            >{{ $book->additional_details }}</textarea>
-
-                                                        </div>
+                                                        </button>
 
 
                                                     </div>
 
-                                                </div>
+
+                                                </form>
 
 
-                                                <div class="modal-footer">
-
-
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-secondary"
-                                                        data-dismiss="modal"
-                                                    >
-
-                                                        Cancel
-
-                                                    </button>
-
-
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-primary"
-                                                    >
-
-                                                        <i class="fa fa-save mr-1"></i>
-
-                                                        Save Changes
-
-                                                    </button>
-
-
-                                                </div>
-
-
-                                            </form>
-
+                                            </div>
 
                                         </div>
 
                                     </div>
 
-                                </div>
+
+                                @endif
 
 
                             @empty

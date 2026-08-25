@@ -57,6 +57,54 @@
         vertical-align: middle !important;
     }
 
+
+    /* ============================================================
+       AUTO REFRESH INDICATOR
+    ============================================================ */
+
+    .auto-refresh-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+
+        font-size: 12px;
+        color: #777;
+
+        margin-left: 12px;
+    }
+
+
+    .auto-refresh-dot {
+        width: 8px;
+        height: 8px;
+
+        border-radius: 50%;
+
+        background: #28a745;
+
+        display: inline-block;
+    }
+
+
+    .auto-refresh-dot.refreshing {
+        animation: refreshPulse 0.8s infinite alternate;
+    }
+
+
+    @keyframes refreshPulse {
+
+        from {
+            opacity: 0.3;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+    }
+
 </style>
 
 
@@ -94,9 +142,14 @@
 
 
             <div
-                class="col-sm-6 p-md-0
-                justify-content-sm-end
-                mt-2 mt-sm-0 d-flex"
+                class="
+                    col-sm-6
+                    p-md-0
+                    justify-content-sm-end
+                    mt-2
+                    mt-sm-0
+                    d-flex
+                "
             >
 
                 <ol class="breadcrumb">
@@ -127,7 +180,9 @@
         <div class="row">
 
 
-            <!-- TOTAL -->
+            <!-- ========================================================
+                 TOTAL PERSONNEL
+            ========================================================= -->
 
             <div class="col-xl-4 col-lg-6 col-sm-6">
 
@@ -139,11 +194,16 @@
                             Total Personnel
                         </h5>
 
-                        <p class="summary-number">
+
+                        <p
+                            class="summary-number"
+                            id="totalPersonnelCount"
+                        >
 
                             {{ $totalPersonnel }}
 
                         </p>
+
 
                         <span class="text-muted">
                             Registered personnel
@@ -156,7 +216,9 @@
             </div>
 
 
-            <!-- VISITED TODAY -->
+            <!-- ========================================================
+                 VISITED TODAY
+            ========================================================= -->
 
             <div class="col-xl-4 col-lg-6 col-sm-6">
 
@@ -168,11 +230,16 @@
                             Visited Today
                         </h5>
 
-                        <p class="summary-number text-primary">
+
+                        <p
+                            class="summary-number text-primary"
+                            id="visitedTodayCount"
+                        >
 
                             {{ $visitedToday }}
 
                         </p>
+
 
                         <span class="text-muted">
                             Personnel who entered today
@@ -185,7 +252,9 @@
             </div>
 
 
-            <!-- INSIDE -->
+            <!-- ========================================================
+                 CURRENTLY INSIDE
+            ========================================================= -->
 
             <div class="col-xl-4 col-lg-6 col-sm-6">
 
@@ -197,11 +266,16 @@
                             Currently Inside
                         </h5>
 
-                        <p class="summary-number text-success">
+
+                        <p
+                            class="summary-number text-success"
+                            id="insideTodayCount"
+                        >
 
                             {{ $insideToday }}
 
                         </p>
+
 
                         <span class="text-muted">
                             Personnel without time out
@@ -247,6 +321,20 @@
 
                         </small>
 
+
+                        <span class="auto-refresh-status">
+
+                            <span
+                                class="auto-refresh-dot"
+                                id="autoRefreshDot"
+                            ></span>
+
+                            <span id="autoRefreshText">
+                                Auto Refresh
+                            </span>
+
+                        </span>
+
                     </div>
 
                 </div>
@@ -290,7 +378,7 @@
                         </thead>
 
 
-                        <tbody>
+                        <tbody id="personnelTableBody">
 
                         @forelse($personnel as $person)
 
@@ -298,6 +386,7 @@
 
                                 $attendance =
                                     $person->latestAttendance;
+
 
                                 $isInside =
                                     $attendance &&
@@ -309,17 +398,25 @@
                             @endphp
 
 
-                            <tr class="{{ $isInside ? 'inside-row' : '' }}">
+                            <tr
+                                class="{{ $isInside ? 'inside-row' : '' }}"
+                            >
 
 
-                                <!-- NUMBER -->
+                                <!-- =================================================
+                                     NUMBER
+                                ================================================== -->
 
                                 <td>
+
                                     {{ $loop->iteration }}
+
                                 </td>
 
 
-                                <!-- PERSONNEL -->
+                                <!-- =================================================
+                                     PERSONNEL
+                                ================================================== -->
 
                                 <td>
 
@@ -332,6 +429,7 @@
 
                                     <br>
 
+
                                     <span class="employee-number">
 
                                         Employee No:
@@ -343,7 +441,9 @@
                                 </td>
 
 
-                                <!-- DEPARTMENT -->
+                                <!-- =================================================
+                                     DEPARTMENT
+                                ================================================== -->
 
                                 <td>
 
@@ -352,7 +452,9 @@
                                 </td>
 
 
-                                <!-- RFID -->
+                                <!-- =================================================
+                                     RFID
+                                ================================================== -->
 
                                 <td>
 
@@ -377,7 +479,9 @@
                                 </td>
 
 
-                                <!-- CONTACT -->
+                                <!-- =================================================
+                                     CONTACT
+                                ================================================== -->
 
                                 <td>
 
@@ -386,7 +490,9 @@
                                 </td>
 
 
-                                <!-- DATE -->
+                                <!-- =================================================
+                                     DATE
+                                ================================================== -->
 
                                 <td>
 
@@ -412,7 +518,9 @@
                                 </td>
 
 
-                                <!-- TIME IN -->
+                                <!-- =================================================
+                                     TIME IN
+                                ================================================== -->
 
                                 <td>
 
@@ -421,7 +529,15 @@
                                         $attendance->time_in
                                     )
 
-                                        <i class="fa fa-sign-in mr-1 text-success"></i>
+                                        <i
+                                            class="
+                                                fa
+                                                fa-sign-in
+                                                mr-1
+                                                text-success
+                                            "
+                                        ></i>
+
 
                                         <strong>
 
@@ -444,7 +560,9 @@
                                 </td>
 
 
-                                <!-- TIME OUT -->
+                                <!-- =================================================
+                                     TIME OUT
+                                ================================================== -->
 
                                 <td>
 
@@ -453,7 +571,15 @@
                                         $attendance->time_out
                                     )
 
-                                        <i class="fa fa-sign-out mr-1 text-danger"></i>
+                                        <i
+                                            class="
+                                                fa
+                                                fa-sign-out
+                                                mr-1
+                                                text-danger
+                                            "
+                                        ></i>
+
 
                                         <strong>
 
@@ -465,15 +591,23 @@
 
                                         </strong>
 
+
                                     @elseif($isInside)
 
                                         <span class="text-warning">
 
-                                            <i class="fa fa-clock-o mr-1"></i>
+                                            <i
+                                                class="
+                                                    fa
+                                                    fa-clock-o
+                                                    mr-1
+                                                "
+                                            ></i>
 
                                             Still Inside
 
                                         </span>
+
 
                                     @else
 
@@ -486,19 +620,27 @@
                                 </td>
 
 
-                                <!-- STATUS -->
+                                <!-- =================================================
+                                     STATUS
+                                ================================================== -->
 
                                 <td>
+
 
                                     @if($isInside)
 
                                         <span
-                                            class="badge badge-success status-badge"
+                                            class="
+                                                badge
+                                                badge-success
+                                                status-badge
+                                            "
                                         >
 
                                             Inside
 
                                         </span>
+
 
                                     @elseif(
                                         $attendance &&
@@ -506,12 +648,17 @@
                                     )
 
                                         <span
-                                            class="badge badge-secondary status-badge"
+                                            class="
+                                                badge
+                                                badge-secondary
+                                                status-badge
+                                            "
                                         >
 
                                             Time Out
 
                                         </span>
+
 
                                     @elseif(
                                         $attendance &&
@@ -519,17 +666,26 @@
                                     )
 
                                         <span
-                                            class="badge badge-warning status-badge"
+                                            class="
+                                                badge
+                                                badge-warning
+                                                status-badge
+                                            "
                                         >
 
                                             No Time Out
 
                                         </span>
 
+
                                     @else
 
                                         <span
-                                            class="badge badge-light status-badge"
+                                            class="
+                                                badge
+                                                badge-light
+                                                status-badge
+                                            "
                                         >
 
                                             No Attendance
@@ -545,6 +701,7 @@
 
                         @empty
 
+
                             <tr>
 
                                 <td
@@ -555,17 +712,19 @@
                                     <i
                                         class="fa fa-users"
                                         style="
-                                        font-size:45px;
-                                        color:#ccc;
+                                            font-size:45px;
+                                            color:#ccc;
                                         "
                                     >
                                     </i>
+
 
                                     <h5 class="mt-3">
 
                                         No personnel found
 
                                     </h5>
+
 
                                     <p class="text-muted">
 
@@ -576,6 +735,7 @@
                                 </td>
 
                             </tr>
+
 
                         @endforelse
 
@@ -615,15 +775,613 @@
 
 $(document).ready(function () {
 
-    $('#personnelTable').DataTable({
 
-        pageLength: 10,
+    /*
+    |--------------------------------------------------------------------------
+    | DATATABLE
+    |--------------------------------------------------------------------------
+    */
 
-        order: [
-            [1, 'asc']
-        ]
+    let personnelTable =
+        $('#personnelTable').DataTable({
 
-    });
+            pageLength: 10,
+
+            order: [
+                [1, 'asc']
+            ]
+
+        });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUTO REFRESH SETTINGS
+    |--------------------------------------------------------------------------
+    |
+    | 1000  = 1 second
+    | 3000  = 3 seconds
+    | 5000  = 5 seconds
+    | 10000 = 10 seconds
+    |
+    */
+
+    const refreshInterval = 3000;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PREVENT MULTIPLE REQUESTS
+    |--------------------------------------------------------------------------
+    */
+
+    let isRefreshing = false;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ELEMENTS
+    |--------------------------------------------------------------------------
+    */
+
+    const autoRefreshDot =
+        document.getElementById(
+            'autoRefreshDot'
+        );
+
+
+    const autoRefreshText =
+        document.getElementById(
+            'autoRefreshText'
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | REFRESH PERSONNEL MONITORING
+    |--------------------------------------------------------------------------
+    */
+
+    async function refreshPersonnelMonitoring() {
+
+
+        /*
+         * Do not start another request
+         * if the previous one is still running.
+         */
+
+        if (isRefreshing) {
+
+            return;
+
+        }
+
+
+        isRefreshing = true;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Refresh Indicator
+        |--------------------------------------------------------------------------
+        */
+
+        if (autoRefreshDot) {
+
+            autoRefreshDot
+                .classList
+                .add('refreshing');
+
+        }
+
+
+        if (autoRefreshText) {
+
+            autoRefreshText.textContent =
+                'Updating...';
+
+        }
+
+
+        try {
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Save Current DataTable State
+            |--------------------------------------------------------------------------
+            */
+
+            const currentSearch =
+                personnelTable.search();
+
+
+            const currentPage =
+                personnelTable.page();
+
+
+            const currentOrder =
+                personnelTable.order();
+
+
+            const currentLength =
+                personnelTable.page.len();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | LOAD FRESH LARAVEL PAGE
+            |--------------------------------------------------------------------------
+            */
+
+            const response =
+                await fetch(
+
+                    window.location.href,
+
+                    {
+
+                        method: 'GET',
+
+                        headers: {
+
+                            'X-Requested-With':
+                                'XMLHttpRequest',
+
+                            'Cache-Control':
+                                'no-cache',
+
+                            'Pragma':
+                                'no-cache'
+
+                        },
+
+                        cache: 'no-store'
+
+                    }
+
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CHECK REQUEST
+            |--------------------------------------------------------------------------
+            */
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Unable to load the latest personnel monitoring data.'
+                );
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | READ HTML
+            |--------------------------------------------------------------------------
+            */
+
+            const html =
+                await response.text();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CREATE TEMPORARY DOCUMENT
+            |--------------------------------------------------------------------------
+            */
+
+            const parser =
+                new DOMParser();
+
+
+            const newDocument =
+                parser.parseFromString(
+                    html,
+                    'text/html'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | NEW SUMMARY COUNTS
+            |--------------------------------------------------------------------------
+            */
+
+            const newTotalPersonnel =
+                newDocument.getElementById(
+                    'totalPersonnelCount'
+                );
+
+
+            const newVisitedToday =
+                newDocument.getElementById(
+                    'visitedTodayCount'
+                );
+
+
+            const newInsideToday =
+                newDocument.getElementById(
+                    'insideTodayCount'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CURRENT SUMMARY COUNTS
+            |--------------------------------------------------------------------------
+            */
+
+            const totalPersonnelElement =
+                document.getElementById(
+                    'totalPersonnelCount'
+                );
+
+
+            const visitedTodayElement =
+                document.getElementById(
+                    'visitedTodayCount'
+                );
+
+
+            const insideTodayElement =
+                document.getElementById(
+                    'insideTodayCount'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE TOTAL PERSONNEL
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                newTotalPersonnel &&
+                totalPersonnelElement
+            ) {
+
+                const oldValue =
+                    totalPersonnelElement
+                        .textContent
+                        .trim();
+
+
+                const newValue =
+                    newTotalPersonnel
+                        .textContent
+                        .trim();
+
+
+                if (oldValue !== newValue) {
+
+                    totalPersonnelElement.textContent =
+                        newValue;
+
+                }
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE VISITED TODAY
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                newVisitedToday &&
+                visitedTodayElement
+            ) {
+
+                const oldValue =
+                    visitedTodayElement
+                        .textContent
+                        .trim();
+
+
+                const newValue =
+                    newVisitedToday
+                        .textContent
+                        .trim();
+
+
+                if (oldValue !== newValue) {
+
+                    visitedTodayElement.textContent =
+                        newValue;
+
+                }
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE CURRENTLY INSIDE
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                newInsideToday &&
+                insideTodayElement
+            ) {
+
+                const oldValue =
+                    insideTodayElement
+                        .textContent
+                        .trim();
+
+
+                const newValue =
+                    newInsideToday
+                        .textContent
+                        .trim();
+
+
+                if (oldValue !== newValue) {
+
+                    insideTodayElement.textContent =
+                        newValue;
+
+                }
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | NEW TABLE BODY
+            |--------------------------------------------------------------------------
+            */
+
+            const newTableBody =
+                newDocument.getElementById(
+                    'personnelTableBody'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CURRENT TABLE BODY
+            |--------------------------------------------------------------------------
+            */
+
+            const currentTableBody =
+                document.getElementById(
+                    'personnelTableBody'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE TABLE
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                newTableBody &&
+                currentTableBody
+            ) {
+
+
+                /*
+                 * Compare rows first.
+                 * If there is no change,
+                 * leave DataTable alone.
+                 */
+
+                const oldRows =
+                    currentTableBody
+                        .innerHTML
+                        .trim();
+
+
+                const newRows =
+                    newTableBody
+                        .innerHTML
+                        .trim();
+
+
+                if (oldRows !== newRows) {
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | DESTROY EXISTING DATATABLE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    personnelTable.destroy();
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | REPLACE PERSONNEL ROWS
+                    |--------------------------------------------------------------------------
+                    */
+
+                    currentTableBody.innerHTML =
+                        newTableBody.innerHTML;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | REINITIALIZE DATATABLE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    personnelTable =
+                        $('#personnelTable')
+                            .DataTable({
+
+                                pageLength:
+                                    currentLength,
+
+                                order:
+                                    currentOrder
+
+                            });
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | RESTORE SEARCH
+                    |--------------------------------------------------------------------------
+                    */
+
+                    personnelTable
+                        .search(
+                            currentSearch
+                        )
+                        .draw();
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | RESTORE PAGE NUMBER
+                    |--------------------------------------------------------------------------
+                    */
+
+                    const pageInfo =
+                        personnelTable
+                            .page
+                            .info();
+
+
+                    if (
+                        currentPage <
+                        pageInfo.pages
+                    ) {
+
+                        personnelTable
+                            .page(
+                                currentPage
+                            )
+                            .draw(
+                                'page'
+                            );
+
+                    }
+
+                }
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | REFRESH SUCCESSFUL
+            |--------------------------------------------------------------------------
+            */
+
+            if (autoRefreshText) {
+
+                autoRefreshText.textContent =
+                    'Auto Refresh';
+
+            }
+
+        }
+
+
+        catch (error) {
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | ERROR
+            |--------------------------------------------------------------------------
+            */
+
+            console.error(
+                'PERSONNEL AUTO REFRESH ERROR:',
+                error
+            );
+
+
+            if (autoRefreshText) {
+
+                autoRefreshText.textContent =
+                    'Refresh Error';
+
+            }
+
+        }
+
+
+        finally {
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | RESET REQUEST
+            |--------------------------------------------------------------------------
+            */
+
+            isRefreshing = false;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | STOP ANIMATION
+            |--------------------------------------------------------------------------
+            */
+
+            if (autoRefreshDot) {
+
+                autoRefreshDot
+                    .classList
+                    .remove('refreshing');
+
+            }
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUTOMATIC REFRESH EVERY 3 SECONDS
+    |--------------------------------------------------------------------------
+    */
+
+    setInterval(
+
+        refreshPersonnelMonitoring,
+
+        refreshInterval
+
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | REFRESH IMMEDIATELY WHEN TAB BECOMES ACTIVE
+    |--------------------------------------------------------------------------
+    */
+
+    document.addEventListener(
+        'visibilitychange',
+        function () {
+
+            if (
+                document.visibilityState
+                ===
+                'visible'
+            ) {
+
+                refreshPersonnelMonitoring();
+
+            }
+
+        }
+    );
+
 
 });
 

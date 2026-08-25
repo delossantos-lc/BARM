@@ -57,6 +57,60 @@
         vertical-align: middle !important;
     }
 
+
+    /* ============================================================
+       AUTO REFRESH INDICATOR
+    ============================================================ */
+
+    .auto-refresh-status {
+
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+
+        font-size: 12px;
+        color: #777;
+
+        margin-left: 12px;
+
+    }
+
+
+    .auto-refresh-dot {
+
+        width: 8px;
+        height: 8px;
+
+        border-radius: 50%;
+
+        background: #28a745;
+
+        display: inline-block;
+
+    }
+
+
+    .auto-refresh-dot.refreshing {
+
+        animation: refreshPulse 0.8s infinite alternate;
+
+    }
+
+
+    @keyframes refreshPulse {
+
+        from {
+            opacity: 0.3;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+    }
+
 </style>
 
 
@@ -94,9 +148,14 @@
 
 
             <div
-                class="col-sm-6 p-md-0
-                justify-content-sm-end
-                mt-2 mt-sm-0 d-flex"
+                class="
+                    col-sm-6
+                    p-md-0
+                    justify-content-sm-end
+                    mt-2
+                    mt-sm-0
+                    d-flex
+                "
             >
 
                 <ol class="breadcrumb">
@@ -127,7 +186,9 @@
         <div class="row">
 
 
-            <!-- TOTAL STUDENTS -->
+            <!-- ========================================================
+                 TOTAL STUDENTS
+            ========================================================= -->
 
             <div class="col-xl-4 col-lg-6 col-sm-6">
 
@@ -139,11 +200,16 @@
                             Total Students
                         </h5>
 
-                        <p class="summary-number">
+
+                        <p
+                            class="summary-number"
+                            id="totalStudentsCount"
+                        >
 
                             {{ $totalStudents }}
 
                         </p>
+
 
                         <span class="text-muted">
                             Registered students
@@ -156,7 +222,9 @@
             </div>
 
 
-            <!-- VISITED TODAY -->
+            <!-- ========================================================
+                 VISITED TODAY
+            ========================================================= -->
 
             <div class="col-xl-4 col-lg-6 col-sm-6">
 
@@ -168,11 +236,16 @@
                             Visited Today
                         </h5>
 
-                        <p class="summary-number text-primary">
+
+                        <p
+                            class="summary-number text-primary"
+                            id="visitedTodayCount"
+                        >
 
                             {{ $visitedToday }}
 
                         </p>
+
 
                         <span class="text-muted">
                             Students who entered today
@@ -185,7 +258,9 @@
             </div>
 
 
-            <!-- CURRENTLY INSIDE -->
+            <!-- ========================================================
+                 CURRENTLY INSIDE
+            ========================================================= -->
 
             <div class="col-xl-4 col-lg-6 col-sm-6">
 
@@ -197,11 +272,16 @@
                             Currently Inside
                         </h5>
 
-                        <p class="summary-number text-success">
+
+                        <p
+                            class="summary-number text-success"
+                            id="insideTodayCount"
+                        >
 
                             {{ $insideToday }}
 
                         </p>
+
 
                         <span class="text-muted">
                             Students without time out
@@ -246,6 +326,20 @@
                             {{ now()->format('F d, Y') }}
 
                         </small>
+
+
+                        <span class="auto-refresh-status">
+
+                            <span
+                                class="auto-refresh-dot"
+                                id="autoRefreshDot"
+                            ></span>
+
+                            <span id="autoRefreshText">
+                                Auto Refresh
+                            </span>
+
+                        </span>
 
                     </div>
 
@@ -292,7 +386,7 @@
                         </thead>
 
 
-                        <tbody>
+                        <tbody id="studentTableBody">
 
                         @forelse($students as $student)
 
@@ -300,6 +394,7 @@
 
                                 $attendance =
                                     $student->latestAttendance;
+
 
                                 $isInside =
                                     $attendance &&
@@ -311,17 +406,25 @@
                             @endphp
 
 
-                            <tr class="{{ $isInside ? 'inside-row' : '' }}">
+                            <tr
+                                class="{{ $isInside ? 'inside-row' : '' }}"
+                            >
 
 
-                                <!-- NUMBER -->
+                                <!-- =================================================
+                                     NUMBER
+                                ================================================== -->
 
                                 <td>
+
                                     {{ $loop->iteration }}
+
                                 </td>
 
 
-                                <!-- STUDENT -->
+                                <!-- =================================================
+                                     STUDENT
+                                ================================================== -->
 
                                 <td>
 
@@ -334,6 +437,7 @@
 
                                     <br>
 
+
                                     <span class="student-number">
 
                                         Student No:
@@ -345,7 +449,9 @@
                                 </td>
 
 
-                                <!-- YEAR LEVEL -->
+                                <!-- =================================================
+                                     YEAR LEVEL
+                                ================================================== -->
 
                                 <td>
 
@@ -354,7 +460,9 @@
                                 </td>
 
 
-                                <!-- COURSE -->
+                                <!-- =================================================
+                                     COURSE
+                                ================================================== -->
 
                                 <td>
 
@@ -363,7 +471,9 @@
                                 </td>
 
 
-                                <!-- RFID -->
+                                <!-- =================================================
+                                     RFID
+                                ================================================== -->
 
                                 <td>
 
@@ -388,7 +498,9 @@
                                 </td>
 
 
-                                <!-- CONTACT -->
+                                <!-- =================================================
+                                     CONTACT
+                                ================================================== -->
 
                                 <td>
 
@@ -397,7 +509,9 @@
                                 </td>
 
 
-                                <!-- ATTENDANCE DATE -->
+                                <!-- =================================================
+                                     ATTENDANCE DATE
+                                ================================================== -->
 
                                 <td>
 
@@ -419,7 +533,9 @@
                                 </td>
 
 
-                                <!-- TIME IN -->
+                                <!-- =================================================
+                                     TIME IN
+                                ================================================== -->
 
                                 <td>
 
@@ -428,7 +544,15 @@
                                         $attendance->time_in
                                     )
 
-                                        <i class="fa fa-sign-in mr-1 text-success"></i>
+                                        <i
+                                            class="
+                                                fa
+                                                fa-sign-in
+                                                mr-1
+                                                text-success
+                                            "
+                                        ></i>
+
 
                                         <strong>
 
@@ -451,7 +575,9 @@
                                 </td>
 
 
-                                <!-- TIME OUT -->
+                                <!-- =================================================
+                                     TIME OUT
+                                ================================================== -->
 
                                 <td>
 
@@ -460,7 +586,15 @@
                                         $attendance->time_out
                                     )
 
-                                        <i class="fa fa-sign-out mr-1 text-danger"></i>
+                                        <i
+                                            class="
+                                                fa
+                                                fa-sign-out
+                                                mr-1
+                                                text-danger
+                                            "
+                                        ></i>
+
 
                                         <strong>
 
@@ -472,15 +606,23 @@
 
                                         </strong>
 
+
                                     @elseif($isInside)
 
                                         <span class="text-warning">
 
-                                            <i class="fa fa-clock-o mr-1"></i>
+                                            <i
+                                                class="
+                                                    fa
+                                                    fa-clock-o
+                                                    mr-1
+                                                "
+                                            ></i>
 
                                             Still Inside
 
                                         </span>
+
 
                                     @else
 
@@ -493,19 +635,27 @@
                                 </td>
 
 
-                                <!-- STATUS -->
+                                <!-- =================================================
+                                     STATUS
+                                ================================================== -->
 
                                 <td>
+
 
                                     @if($isInside)
 
                                         <span
-                                            class="badge badge-success status-badge"
+                                            class="
+                                                badge
+                                                badge-success
+                                                status-badge
+                                            "
                                         >
 
                                             Inside
 
                                         </span>
+
 
                                     @elseif(
                                         $attendance &&
@@ -513,12 +663,17 @@
                                     )
 
                                         <span
-                                            class="badge badge-secondary status-badge"
+                                            class="
+                                                badge
+                                                badge-secondary
+                                                status-badge
+                                            "
                                         >
 
                                             Time Out
 
                                         </span>
+
 
                                     @elseif(
                                         $attendance &&
@@ -526,17 +681,26 @@
                                     )
 
                                         <span
-                                            class="badge badge-warning status-badge"
+                                            class="
+                                                badge
+                                                badge-warning
+                                                status-badge
+                                            "
                                         >
 
                                             No Time Out
 
                                         </span>
 
+
                                     @else
 
                                         <span
-                                            class="badge badge-light status-badge"
+                                            class="
+                                                badge
+                                                badge-light
+                                                status-badge
+                                            "
                                         >
 
                                             No Attendance
@@ -552,6 +716,7 @@
 
                         @empty
 
+
                             <tr>
 
                                 <td
@@ -562,17 +727,19 @@
                                     <i
                                         class="fa fa-graduation-cap"
                                         style="
-                                        font-size:45px;
-                                        color:#ccc;
+                                            font-size:45px;
+                                            color:#ccc;
                                         "
                                     >
                                     </i>
+
 
                                     <h5 class="mt-3">
 
                                         No students found
 
                                     </h5>
+
 
                                     <p class="text-muted">
 
@@ -583,6 +750,7 @@
                                 </td>
 
                             </tr>
+
 
                         @endforelse
 
@@ -622,15 +790,629 @@
 
 $(document).ready(function () {
 
-    $('#studentTable').DataTable({
 
-        pageLength: 10,
+    /*
+    |--------------------------------------------------------------------------
+    | DATATABLE
+    |--------------------------------------------------------------------------
+    */
 
-        order: [
-            [1, 'asc']
-        ]
+    let studentTable =
+        $('#studentTable').DataTable({
 
-    });
+            pageLength: 10,
+
+            order: [
+                [1, 'asc']
+            ]
+
+        });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUTO REFRESH SETTINGS
+    |--------------------------------------------------------------------------
+    |
+    | 1000  = 1 second
+    | 3000  = 3 seconds
+    | 5000  = 5 seconds
+    | 10000 = 10 seconds
+    |
+    */
+
+    const refreshInterval = 3000;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PREVENT MULTIPLE REQUESTS
+    |--------------------------------------------------------------------------
+    */
+
+    let isRefreshing = false;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ELEMENTS
+    |--------------------------------------------------------------------------
+    */
+
+    const autoRefreshDot =
+        document.getElementById(
+            'autoRefreshDot'
+        );
+
+
+    const autoRefreshText =
+        document.getElementById(
+            'autoRefreshText'
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | REFRESH STUDENT MONITORING
+    |--------------------------------------------------------------------------
+    */
+
+    async function refreshStudentMonitoring() {
+
+
+        /*
+         * Do not start another request
+         * if the previous one is still running.
+         */
+
+        if (isRefreshing) {
+
+            return;
+
+        }
+
+
+        isRefreshing = true;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Refresh Indicator
+        |--------------------------------------------------------------------------
+        */
+
+        if (autoRefreshDot) {
+
+            autoRefreshDot
+                .classList
+                .add('refreshing');
+
+        }
+
+
+        if (autoRefreshText) {
+
+            autoRefreshText.textContent =
+                'Updating...';
+
+        }
+
+
+        try {
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Save Current DataTable State
+            |--------------------------------------------------------------------------
+            */
+
+            const currentSearch =
+                studentTable.search();
+
+
+            const currentPage =
+                studentTable.page();
+
+
+            const currentOrder =
+                studentTable.order();
+
+
+            const currentLength =
+                studentTable.page.len();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Load Fresh Laravel Page
+            |--------------------------------------------------------------------------
+            */
+
+            const response =
+                await fetch(
+
+                    window.location.href,
+
+                    {
+
+                        method: 'GET',
+
+                        headers: {
+
+                            'X-Requested-With':
+                                'XMLHttpRequest',
+
+                            'Cache-Control':
+                                'no-cache',
+
+                            'Pragma':
+                                'no-cache'
+
+                        },
+
+                        cache: 'no-store'
+
+                    }
+
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Check Request
+            |--------------------------------------------------------------------------
+            */
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Unable to load the latest monitoring data.'
+                );
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Read HTML
+            |--------------------------------------------------------------------------
+            */
+
+            const html =
+                await response.text();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Convert HTML Into Temporary Document
+            |--------------------------------------------------------------------------
+            */
+
+            const parser =
+                new DOMParser();
+
+
+            const newDocument =
+                parser.parseFromString(
+                    html,
+                    'text/html'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | NEW SUMMARY COUNTS
+            |--------------------------------------------------------------------------
+            */
+
+            const newTotalStudents =
+                newDocument.getElementById(
+                    'totalStudentsCount'
+                );
+
+
+            const newVisitedToday =
+                newDocument.getElementById(
+                    'visitedTodayCount'
+                );
+
+
+            const newInsideToday =
+                newDocument.getElementById(
+                    'insideTodayCount'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CURRENT SUMMARY ELEMENTS
+            |--------------------------------------------------------------------------
+            */
+
+            const totalStudentsElement =
+                document.getElementById(
+                    'totalStudentsCount'
+                );
+
+
+            const visitedTodayElement =
+                document.getElementById(
+                    'visitedTodayCount'
+                );
+
+
+            const insideTodayElement =
+                document.getElementById(
+                    'insideTodayCount'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE TOTAL STUDENTS
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                newTotalStudents &&
+                totalStudentsElement
+            ) {
+
+                const oldValue =
+                    totalStudentsElement
+                        .textContent
+                        .trim();
+
+
+                const newValue =
+                    newTotalStudents
+                        .textContent
+                        .trim();
+
+
+                if (oldValue !== newValue) {
+
+                    totalStudentsElement.textContent =
+                        newValue;
+
+                }
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE VISITED TODAY
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                newVisitedToday &&
+                visitedTodayElement
+            ) {
+
+                const oldValue =
+                    visitedTodayElement
+                        .textContent
+                        .trim();
+
+
+                const newValue =
+                    newVisitedToday
+                        .textContent
+                        .trim();
+
+
+                if (oldValue !== newValue) {
+
+                    visitedTodayElement.textContent =
+                        newValue;
+
+                }
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE CURRENTLY INSIDE
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                newInsideToday &&
+                insideTodayElement
+            ) {
+
+                const oldValue =
+                    insideTodayElement
+                        .textContent
+                        .trim();
+
+
+                const newValue =
+                    newInsideToday
+                        .textContent
+                        .trim();
+
+
+                if (oldValue !== newValue) {
+
+                    insideTodayElement.textContent =
+                        newValue;
+
+                }
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | NEW TABLE BODY
+            |--------------------------------------------------------------------------
+            */
+
+            const newTableBody =
+                newDocument.getElementById(
+                    'studentTableBody'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CURRENT TABLE BODY
+            |--------------------------------------------------------------------------
+            */
+
+            const currentTableBody =
+                document.getElementById(
+                    'studentTableBody'
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE TABLE
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                newTableBody &&
+                currentTableBody
+            ) {
+
+
+                /*
+                 * Compare table contents first.
+                 *
+                 * This prevents DataTable from
+                 * being destroyed every 3 seconds
+                 * when nothing has changed.
+                 */
+
+                const oldRows =
+                    currentTableBody
+                        .innerHTML
+                        .trim();
+
+
+                const newRows =
+                    newTableBody
+                        .innerHTML
+                        .trim();
+
+
+                /*
+                 * Only rebuild the table if
+                 * attendance records changed.
+                 */
+
+                if (oldRows !== newRows) {
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Destroy Existing DataTable
+                    |--------------------------------------------------------------------------
+                    */
+
+                    studentTable.destroy();
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Replace Rows
+                    |--------------------------------------------------------------------------
+                    */
+
+                    currentTableBody.innerHTML =
+                        newTableBody.innerHTML;
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Reinitialize DataTable
+                    |--------------------------------------------------------------------------
+                    */
+
+                    studentTable =
+                        $('#studentTable')
+                            .DataTable({
+
+                                pageLength:
+                                    currentLength,
+
+                                order:
+                                    currentOrder
+
+                            });
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Restore Search
+                    |--------------------------------------------------------------------------
+                    */
+
+                    studentTable
+                        .search(
+                            currentSearch
+                        )
+                        .draw();
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Restore Page
+                    |--------------------------------------------------------------------------
+                    */
+
+                    const pageInfo =
+                        studentTable
+                            .page
+                            .info();
+
+
+                    if (
+                        currentPage <
+                        pageInfo.pages
+                    ) {
+
+                        studentTable
+                            .page(
+                                currentPage
+                            )
+                            .draw(
+                                'page'
+                            );
+
+                    }
+
+                }
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Refresh Successful
+            |--------------------------------------------------------------------------
+            */
+
+            if (autoRefreshText) {
+
+                autoRefreshText.textContent =
+                    'Auto Refresh';
+
+            }
+
+
+        }
+
+
+        catch (error) {
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Error
+            |--------------------------------------------------------------------------
+            */
+
+            console.error(
+                'AUTO REFRESH ERROR:',
+                error
+            );
+
+
+            if (autoRefreshText) {
+
+                autoRefreshText.textContent =
+                    'Refresh Error';
+
+            }
+
+        }
+
+
+        finally {
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Reset Request Status
+            |--------------------------------------------------------------------------
+            */
+
+            isRefreshing = false;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Stop Refresh Animation
+            |--------------------------------------------------------------------------
+            */
+
+            if (autoRefreshDot) {
+
+                autoRefreshDot
+                    .classList
+                    .remove('refreshing');
+
+            }
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUTOMATIC REFRESH
+    |--------------------------------------------------------------------------
+    |
+    | Every 3 seconds Laravel is checked
+    | for updated student attendance data.
+    |
+    */
+
+    setInterval(
+
+        refreshStudentMonitoring,
+
+        refreshInterval
+
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | REFRESH WHEN USER RETURNS TO TAB
+    |--------------------------------------------------------------------------
+    |
+    | If the administrator switches tabs
+    | and comes back, refresh immediately.
+    |
+    */
+
+    document.addEventListener(
+        'visibilitychange',
+        function () {
+
+            if (
+                document.visibilityState
+                ===
+                'visible'
+            ) {
+
+                refreshStudentMonitoring();
+
+            }
+
+        }
+    );
+
 
 });
 

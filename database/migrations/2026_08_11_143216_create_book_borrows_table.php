@@ -11,14 +11,57 @@ return new class extends Migration
         Schema::create('book_borrows', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('book_id');
+            /*
+            |--------------------------------------------------------------------------
+            | BOOK
+            |--------------------------------------------------------------------------
+            */
 
-            // Borrower/user ID
+            $table->foreignId('book_id')
+                ->constrained('books')
+                ->cascadeOnDelete();
+
+            /*
+            |--------------------------------------------------------------------------
+            | BORROWER
+            |--------------------------------------------------------------------------
+            |
+            | borrower_type identifies which table contains borrower_id.
+            |
+            | student   = students.id
+            | personnel = personnel.id
+            |
+            */
+
+            $table->enum('borrower_type', [
+                'student',
+                'personnel'
+            ]);
+
             $table->unsignedBigInteger('borrower_id');
 
+            $table->index([
+                'borrower_type',
+                'borrower_id'
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | BORROWING DATES
+            |--------------------------------------------------------------------------
+            */
+
             $table->date('borrowed_at');
+
             $table->date('due_date');
+
             $table->date('returned_at')->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | STATUS
+            |--------------------------------------------------------------------------
+            */
 
             $table->enum('status', [
                 'borrowed',
@@ -29,12 +72,6 @@ return new class extends Migration
             $table->text('remarks')->nullable();
 
             $table->timestamps();
-
-            // Link borrowing record to books table
-            $table->foreign('book_id')
-                ->references('id')
-                ->on('books')
-                ->onDelete('cascade');
         });
     }
 

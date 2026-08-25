@@ -3,1566 +3,1228 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="csrf-token"
+        content="{{ csrf_token() }}"
+    >
 
     <title>Borrow Books</title>
 
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         rel="stylesheet"
     >
 
     <style>
-        body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #FDECEC, #F7C8D0);
-            font-family: Arial, Helvetica, sans-serif;
+    :root {
+        --pink-background: #f8dadd;
+        --pink-dark: #d76091;
+        --pink-light: #fff2f6;
+        --green: #198754;
+        --green-hover: #146c43;
+        --gray: #737d86;
+        --gray-hover: #616a72;
+        --text-dark: #202124;
+        --muted: #687079;
+        --border: #d9dee3;
+        --white: #ffffff;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        background: var(--pink-background);
+        color: var(--text-dark);
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .kiosk-container {
+        width: min(92%, 1180px);
+        margin: 0 auto;
+        padding: 14px 0 35px;
+    }
+
+    /* HEADER */
+
+    .kiosk-header {
+        padding: 0 15px 15px;
+        text-align: center;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .college-logo {
+        display: block;
+        width: 75px;
+        max-height: 70px;
+        margin: 0 auto 7px;
+        object-fit: contain;
+    }
+
+    .college-name {
+        margin-bottom: 5px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #424242;
+    }
+
+    .kiosk-title {
+        margin: 0;
+        color: #242424;
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        font-weight: 900;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .kiosk-subtitle {
+        display: block;
+        margin-top: 5px;
+        color: #646464;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* PANELS */
+
+    .kiosk-panel {
+        margin-bottom: 18px;
+        padding: 24px;
+        background: var(--white);
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 8px 18px rgba(115, 75, 84, 0.09);
+    }
+
+    .section-title {
+        margin-bottom: 4px;
+        color: #202020;
+        font-size: 1.2rem;
+        font-weight: 800;
+    }
+
+    .section-description {
+        margin-bottom: 18px;
+        color: var(--muted);
+        font-size: 0.82rem;
+    }
+
+    /* INPUTS */
+
+    .form-label {
+        margin-bottom: 7px;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .large-input {
+        min-height: 53px;
+        padding: 11px 15px;
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: #252525;
+        font-size: 0.95rem;
+    }
+
+    .large-input:focus {
+        background: #ffffff;
+        border-color: var(--pink-dark);
+        box-shadow: 0 0 0 4px rgba(215, 96, 145, 0.13);
+    }
+
+    .readonly-input {
+        background-color: #f7f8f9 !important;
+        cursor: not-allowed;
+    }
+
+    /* RFID SCAN BOX */
+
+    .scan-area {
+        padding: 30px 20px;
+        text-align: center;
+        background: #ffffff;
+        border: 2px dashed #ced4da;
+        border-radius: 14px;
+    }
+
+    .scan-icon {
+        margin-bottom: 10px;
+        color: #657dd4;
+        font-size: 2.5rem;
+    }
+
+    .scan-heading {
+        margin-bottom: 4px;
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    .scan-instruction {
+        margin-bottom: 17px;
+        color: var(--muted);
+        font-size: 0.82rem;
+    }
+
+    .rfid-input-wrapper {
+        width: min(100%, 600px);
+        margin: 0 auto;
+    }
+
+    .rfid-status {
+        min-height: 24px;
+        margin-top: 10px;
+        font-size: 0.87rem;
+        font-weight: 700;
+    }
+
+    .borrower-found {
+        padding: 9px 12px;
+        background: #e9f8ee;
+        border-radius: 9px;
+        color: #18763c;
+    }
+
+    .borrower-error {
+        padding: 9px 12px;
+        background: #ffeded;
+        border-radius: 9px;
+        color: #bd3434;
+    }
+
+    /* BOOK SEARCH */
+
+    .book-list {
+        max-height: 390px;
+        overflow-y: auto;
+        padding-right: 6px;
+    }
+
+    .book-card {
+        position: relative;
+        margin-bottom: 10px;
+        padding: 15px;
+        background: #ffffff;
+        border: 1px solid #e1e4e8;
+        border-radius: 11px;
+        cursor: pointer;
+        transition: 0.18s ease;
+    }
+
+    .book-card:hover {
+        border-color: var(--pink-dark);
+        box-shadow: 0 5px 13px rgba(0, 0, 0, 0.07);
+        transform: translateY(-1px);
+    }
+
+    .book-card.selected {
+        background: var(--pink-light);
+        border: 2px solid var(--pink-dark);
+    }
+
+    .book-title {
+        margin-bottom: 5px;
+        padding-right: 35px;
+        color: #252525;
+        font-size: 0.95rem;
+        font-weight: 800;
+    }
+
+    .book-details {
+        margin: 1px 0;
+        color: #72777d;
+        font-size: 0.8rem;
+    }
+
+    .selection-icon {
+        color: var(--pink-dark);
+    }
+
+    /* SELECTED BOOKS */
+
+    .selected-books-box {
+        min-height: 220px;
+        padding: 16px;
+        background: #ffffff;
+        border: 2px dashed #d5d9dd;
+        border-radius: 13px;
+    }
+
+    .selected-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 9px;
+        padding: 12px;
+        background: var(--pink-light);
+        border: 1px solid #edbdcf;
+        border-radius: 10px;
+    }
+
+    .empty-selection {
+        padding: 45px 15px;
+        text-align: center;
+        color: #8b9298;
+    }
+
+    .empty-selection i {
+        display: block;
+        margin-bottom: 12px;
+        color: #59a773;
+        font-size: 2.4rem;
+    }
+
+    /* INFORMATION BOXES */
+
+    .information-box {
+        height: 100%;
+        min-height: 76px;
+        padding: 13px 15px;
+        background: #f5f6f7;
+        border-radius: 10px;
+    }
+
+    .information-label {
+        margin-bottom: 4px;
+        color: #666d73;
+        font-size: 0.72rem;
+    }
+
+    .information-value {
+        margin: 0;
+        color: #222222;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    /* BUTTONS */
+
+    .action-panel {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        padding: 20px 25px;
+    }
+
+    .btn-confirm,
+    .btn-cancel {
+        width: min(100%, 340px);
+        min-height: 52px;
+        border: none;
+        border-radius: 10px;
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-weight: 700;
+    }
+
+    .btn-confirm {
+        background: var(--green);
+    }
+
+    .btn-confirm:hover,
+    .btn-confirm:focus {
+        background: var(--green-hover);
+        color: #ffffff;
+    }
+
+    .btn-confirm:disabled {
+        background: #9ebcac;
+        cursor: not-allowed;
+    }
+
+    .btn-cancel {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        background: var(--gray);
+        text-decoration: none;
+    }
+
+    .btn-cancel:hover,
+    .btn-cancel:focus {
+        background: var(--gray-hover);
+        color: #ffffff;
+    }
+
+    .count-badge {
+        padding: 6px 11px;
+        background: #5e6871;
+        border-radius: 20px;
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 12px;
+    }
+
+    @media (max-width: 767px) {
+        .kiosk-container {
+            width: 95%;
         }
 
-        .main-container {
-            max-width: 1500px;
-        }
-
-        .header-title {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #6c757d;
-        }
-
-        .section-card {
-            background: #ffffff;
-            border: none;
-            border-radius: 25px;
-            padding: 30px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        .kiosk-logo {
-            width: 100px;
-            height: auto;
-        }
-
-        .student-input,
-        .search-input,
-        .barcode-input {
-            height: 65px;
-            font-size: 1.2rem;
-            border-radius: 15px;
-        }
-
-        .book-card {
-            border: 2px solid #eeeeee;
-            border-radius: 20px;
-            overflow: hidden;
-            transition: 0.2s;
-            height: 100%;
-            background: #ffffff;
-        }
-
-        .book-card:hover {
-            border-color: #212529;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        .book-card.selected {
-            border: 3px solid #198754;
-            box-shadow: 0 8px 25px rgba(25, 135, 84, 0.20);
-        }
-
-        .book-placeholder {
-            height: 220px;
-            width: 100%;
-            background: #eeeeee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 5rem;
-        }
-
-        .book-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            min-height: 55px;
-        }
-
-        .book-author {
-            color: #6c757d;
-            font-size: 0.95rem;
-        }
-
-        .book-info {
-            font-size: 0.88rem;
-        }
-
-        .availability {
-            font-size: 0.9rem;
-        }
-
-        .btn-select {
-            height: 48px;
-            border-radius: 12px;
-            font-weight: 700;
-        }
-
-        .selected-area {
-            min-height: 180px;
-        }
-
-        .selected-book {
-            border: 1px solid #dddddd;
-            border-radius: 15px;
+        .kiosk-panel {
             padding: 18px;
-            background: #fafafa;
         }
 
-        .btn-action {
-            height: 65px;
-            border-radius: 15px;
-            font-size: 1.2rem;
-            font-weight: 700;
+        .action-panel {
+            flex-direction: column;
         }
 
-        .book-counter {
-            font-size: 1rem;
-            padding: 10px 15px;
+        .btn-confirm,
+        .btn-cancel {
+            width: 100%;
         }
 
-        @media(max-width: 768px) {
-            .header-title {
-                font-size: 2rem;
-            }
-
-            .section-card {
-                padding: 20px;
-            }
-
-            .book-placeholder {
-                height: 180px;
-            }
+        .book-list {
+            max-height: 330px;
         }
-    </style>
+    }
+</style>
 </head>
 
 <body>
 
-<div class="container-fluid py-4">
+<div class="kiosk-container">
 
-    <div class="main-container mx-auto">
-
-        <!-- =====================================================
-             HEADER
-        ====================================================== -->
-
-        <div class="text-center mb-4">
-
-            <img
-                src="{{ asset('images/lclogo.png') }}"
-                class="kiosk-logo mb-2"
-                alt="Lourdes College Logo"
-            >
-
-            <h1 class="header-title">
-                BORROW A BOOK
-            </h1>
-
-            <p class="subtitle">
-                Select a book below or scan the book barcode.
-            </p>
-
+    {{-- HEADER --}}
+    <header class="kiosk-header">
+        <div class="college-name">
+            Lourdes College Learning Commons
         </div>
 
+        <h1 class="kiosk-title">
+            Borrow Books
+        </h1>
 
-        <!-- =====================================================
-             SUCCESS MESSAGE
-        ====================================================== -->
+        <span class="kiosk-subtitle">
+            Scan your RFID and select the books you want to borrow.
+        </span>
+    </header>
 
-        @if(session('success'))
+    {{-- MESSAGES --}}
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fa-solid fa-circle-check me-2"></i>
 
-            <div class="alert alert-success alert-dismissible fade show shadow-sm">
+            {{ session('success') }}
 
-                <strong>Success!</strong>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
+        </div>
+    @endif
 
-                {{ session('success') }}
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-                </button>
+            {{ session('error') }}
 
-            </div>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
+        </div>
+    @endif
 
-        @endif
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show">
+            <strong>Please check the following:</strong>
 
+            <ul class="mb-0 mt-2">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
 
-        <!-- =====================================================
-             ERROR MESSAGE
-        ====================================================== -->
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
+        </div>
+    @endif
 
-        @if(session('error'))
+    <form
+        action="{{ route('borrow.store') }}"
+        method="POST"
+        id="borrowForm"
+    >
+        @csrf
 
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+        {{-- BORROWER INFORMATION --}}
+        <section class="kiosk-panel">
+            <h2 class="section-title">
+                Borrower Information
+            </h2>
 
-                <strong>Error!</strong>
+            <p class="section-description">
+                Scan the RFID card to retrieve the registered borrower.
+            </p>
 
-                {{ session('error') }}
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-                </button>
-
-            </div>
-
-        @endif
-
-
-        <!-- =====================================================
-             VALIDATION ERRORS
-        ====================================================== -->
-
-        @if($errors->any())
-
-            <div class="alert alert-danger shadow-sm">
-
-                <strong>
-                    Please check the following:
-                </strong>
-
-                <ul class="mb-0 mt-2">
-
-                    @foreach($errors->all() as $error)
-
-                        <li>{{ $error }}</li>
-
-                    @endforeach
-
-                </ul>
-
-            </div>
-
-        @endif
-
-
-        <!-- =====================================================
-             BORROW FORM
-        ====================================================== -->
-
-        <form
-            action="{{ route('borrow.store') }}"
-            method="POST"
-            id="borrowForm"
-        >
-
-            @csrf
-
-
-            <!-- =================================================
-                 STUDENT INFORMATION
-            ================================================== -->
-
-            <div class="section-card mb-4">
-
-                <h4 class="fw-bold mb-3">
-                    Student Information
-                </h4>
-
-                <div class="row g-3">
-
-                    <div class="col-lg-6">
-
-                        <label
-                            for="student_id"
-                            class="form-label fw-bold"
-                        >
-                            Student ID
-                        </label>
-
-                        <input
-                            type="text"
-                            name="student_id"
-                            id="student_id"
-                            class="form-control student-input"
-                            placeholder="Scan or enter Student ID"
-                            value="{{ old('student_id') }}"
-                            autocomplete="off"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="col-lg-6">
-
-                        <label
-                            for="student_name"
-                            class="form-label fw-bold"
-                        >
-                            Student Name
-                        </label>
-
-                        <input
-                            type="text"
-                            name="student_name"
-                            id="student_name"
-                            class="form-control student-input"
-                            placeholder="Enter student name"
-                            value="{{ old('student_name') }}"
-                            required
-                        >
-
-                    </div>
-
+            <div class="scan-area">
+                <div class="scan-icon">
+                    <i class="fa-solid fa-id-card"></i>
                 </div>
 
-            </div>
-
-
-            <!-- =================================================
-                 FIND BOOK
-            ================================================== -->
-
-            <div class="section-card mb-4">
-
-                <h4 class="fw-bold mb-3">
-                    Find a Book
-                </h4>
-
-                <div class="row g-3">
-
-                    <div class="col-lg-7">
-
-                        <label
-                            for="bookSearch"
-                            class="form-label fw-bold"
-                        >
-                            Search Book
-                        </label>
-
-                        <input
-                            type="text"
-                            id="bookSearch"
-                            class="form-control search-input"
-                            placeholder="Search by title, author, ISBN, call number, or book code"
-                            autocomplete="off"
-                        >
-
-                    </div>
-
-
-                    <div class="col-lg-5">
-
-                        <label
-                            for="barcodeSearch"
-                            class="form-label fw-bold"
-                        >
-                            Scan Book Barcode
-                        </label>
-
-                        <input
-                            type="text"
-                            id="barcodeSearch"
-                            class="form-control barcode-input"
-                            placeholder="Scan barcode here"
-                            autocomplete="off"
-                        >
-
-                    </div>
-
+                <div class="scan-heading">
+                    Scan Student or Personnel RFID
                 </div>
 
-            </div>
+                <p class="scan-instruction">
+                    The name and information will appear automatically.
+                </p>
 
-
-            <!-- =================================================
-                 AVAILABLE BOOKS FROM DATABASE
-            ================================================== -->
-
-            <div class="section-card mb-4">
-
-                <div
-                    class="d-flex flex-wrap justify-content-between align-items-center mb-4"
-                >
-
-                    <div>
-
-                        <h4 class="fw-bold mb-1">
-                            Available Books
-                        </h4>
-
-                        <small class="text-muted">
-                            Choose the books you want to borrow.
-                        </small>
-
-                    </div>
-
-
-                    <span
-                        class="badge bg-dark book-counter mt-2 mt-md-0"
+                <div class="rfid-input-wrapper">
+                    <input
+                        type="text"
+                        name="rfid_tag_uid"
+                        id="rfid_tag_uid"
+                        class="form-control large-input text-center"
+                        placeholder="Scan RFID card"
+                        value="{{ old('rfid_tag_uid') }}"
+                        autocomplete="off"
+                        autofocus
+                        required
                     >
 
-                        {{ $books->count() }}
-
-                        {{ $books->count() == 1 ? 'Book' : 'Books' }}
-
-                    </span>
-
+                    <div
+                        id="rfidStatus"
+                        class="rfid-status text-muted"
+                    >
+                        <i class="fa-solid fa-id-card me-1"></i>
+                        Waiting for RFID scan...
+                    </div>
                 </div>
-
-
-                <!-- NO SEARCH RESULTS -->
-
-                <div
-                    id="noSearchResults"
-                    class="alert alert-warning text-center d-none"
-                >
-                    No books matched your search.
-                </div>
-
-
-                <!-- BOOKS -->
-
-                <div
-                    class="row g-4"
-                    id="booksContainer"
-                >
-
-                    @forelse($books as $book)
-
-                        <div
-                            class="col-xl-3 col-lg-4 col-md-6 book-item"
-
-                            data-id="{{ $book->id }}"
-
-                            data-title="{{ strtolower($book->title ?? '') }}"
-
-                            data-author="{{ strtolower($book->author ?? '') }}"
-
-                            data-isbn="{{ strtolower($book->isbn ?? '') }}"
-
-                            data-key="{{ strtolower($book->unique_key ?? '') }}"
-
-                            data-call-number="{{ strtolower($book->call_number ?? '') }}"
-                        >
-
-                            <div
-                                class="book-card"
-                                id="book-card-{{ $book->id }}"
-                            >
-
-                                <!-- BOOK IMAGE PLACEHOLDER -->
-
-                                <div class="book-placeholder">
-                                    📘
-                                </div>
-
-
-                                <div class="p-3">
-
-                                    <!-- TITLE -->
-
-                                    <div class="book-title">
-                                        {{ $book->title ?? 'Untitled Book' }}
-                                    </div>
-
-
-                                    <!-- AUTHOR -->
-
-                                    <div class="book-author mb-2">
-                                        {{ $book->author ?? 'Unknown Author' }}
-                                    </div>
-
-
-                                    <!-- ISBN -->
-
-                                    <div class="book-info mb-1">
-
-                                        <span class="text-muted">
-                                            ISBN:
-                                        </span>
-
-                                        <strong>
-                                            {{ $book->isbn ?? 'N/A' }}
-                                        </strong>
-
-                                    </div>
-
-
-                                    <!-- UNIQUE KEY -->
-
-                                    <div class="book-info mb-1">
-
-                                        <span class="text-muted">
-                                            Book Code:
-                                        </span>
-
-                                        <strong>
-                                            {{ $book->unique_key ?? 'N/A' }}
-                                        </strong>
-
-                                    </div>
-
-
-                                    <!-- CALL NUMBER -->
-
-                                    @if($book->call_number)
-
-                                        <div class="book-info mb-1">
-
-                                            <span class="text-muted">
-                                                Call Number:
-                                            </span>
-
-                                            {{ $book->call_number }}
-
-                                        </div>
-
-                                    @endif
-
-
-                                    <!-- SUBLOCATION -->
-
-                                    @if($book->sublocation)
-
-                                        <div class="book-info mb-1">
-
-                                            <span class="text-muted">
-                                                Location:
-                                            </span>
-
-                                            {{ $book->sublocation }}
-
-                                        </div>
-
-                                    @endif
-
-
-                                    <!-- PUBLISHER -->
-
-                                    @if($book->publisher)
-
-                                        <div class="book-info mb-1">
-
-                                            <span class="text-muted">
-                                                Publisher:
-                                            </span>
-
-                                            {{ $book->publisher }}
-
-                                        </div>
-
-                                    @endif
-
-
-                                    <!-- YEAR -->
-
-                                    @if($book->year)
-
-                                        <div class="book-info mb-1">
-
-                                            <span class="text-muted">
-                                                Year:
-                                            </span>
-
-                                            {{ $book->year }}
-
-                                        </div>
-
-                                    @endif
-
-
-                                    <!-- EDITION -->
-
-                                    @if($book->edition)
-
-                                        <div class="book-info mb-1">
-
-                                            <span class="text-muted">
-                                                Edition:
-                                            </span>
-
-                                            {{ $book->edition }}
-
-                                        </div>
-
-                                    @endif
-
-
-                                    <!-- STATUS -->
-
-                                    <div
-                                        class="availability text-success fw-bold mt-3 mb-3"
-                                    >
-                                        Available
-                                    </div>
-
-
-                                    <!-- SELECT BUTTON -->
-
-                                    <button
-                                        type="button"
-                                        id="select-button-{{ $book->id }}"
-                                        class="btn btn-dark w-100 btn-select"
-
-                                        onclick='selectBook(
-                                            {{ $book->id }},
-                                            @json($book->title),
-                                            @json($book->author),
-                                            @json($book->isbn),
-                                            @json($book->unique_key),
-                                            @json($book->call_number),
-                                            @json($book->sublocation),
-                                            @json($book->publisher),
-                                            @json($book->year),
-                                            @json($book->edition)
-                                        )'
-                                    >
-                                        Select Book
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    @empty
-
-                        <div class="col-12">
-
-                            <div class="text-center py-5 text-muted">
-
-                                <div style="font-size:5rem;">
-                                    📚
-                                </div>
-
-                                <h4 class="fw-bold mt-3">
-                                    No books available
-                                </h4>
-
-                                <p class="mb-0">
-                                    There are currently no available books in the database.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    @endforelse
-
-                </div>
-
             </div>
 
-
-            <!-- =================================================
-                 SELECTED BOOKS
-            ================================================== -->
-
-            <div class="section-card mb-4">
-
-                <div
-                    class="d-flex justify-content-between align-items-center mb-3"
-                >
-
-                    <div>
-
-                        <h4 class="fw-bold mb-1">
-                            Selected Books
-                        </h4>
-
-                        <p class="text-muted mb-0">
-                            Books selected for borrowing will appear here.
-                        </p>
-
-                    </div>
-
-
-                    <span
-                        id="selectedCount"
-                        class="badge bg-success fs-6"
+            <div class="row g-3 mt-2">
+                <div class="col-md-4">
+                    <label
+                        for="borrower_name"
+                        class="form-label"
                     >
-                        0 Selected
-                    </span>
-
-                </div>
-
-
-                <!--
-                    JavaScript creates:
+                        Borrower Name
+                    </label>
 
                     <input
-                        type="hidden"
-                        name="book_ids[]"
-                        value="BOOK ID"
+                        type="text"
+                        id="borrower_name"
+                        class="form-control large-input readonly-input"
+                        placeholder="Name will appear here"
+                        readonly
                     >
-                -->
+                </div>
 
-                <div id="selectedBookInputs"></div>
+                <div class="col-md-4">
+                    <label
+                        for="borrower_number"
+                        class="form-label"
+                    >
+                        Student/Employee Number
+                    </label>
 
+                    <input
+                        type="text"
+                        id="borrower_number"
+                        class="form-control large-input readonly-input"
+                        placeholder="Number will appear here"
+                        readonly
+                    >
+                </div>
 
-                <div
-                    class="selected-area mt-4"
-                    id="selectedBooksArea"
-                >
+                <div class="col-md-4">
+                    <label
+                        for="borrower_type_display"
+                        class="form-label"
+                    >
+                        Borrower Type
+                    </label>
 
-                    <div class="text-center py-5 text-muted">
+                    <input
+                        type="text"
+                        id="borrower_type_display"
+                        class="form-control large-input readonly-input"
+                        placeholder="Student or Personnel"
+                        readonly
+                    >
+                </div>
+            </div>
 
-                        <div style="font-size:3rem;">
-                            📚
+            <input
+                type="hidden"
+                name="borrower_id"
+                id="borrower_id"
+                value="{{ old('borrower_id') }}"
+            >
+
+            <input
+                type="hidden"
+                name="borrower_type"
+                id="borrower_type"
+                value="{{ old('borrower_type') }}"
+            >
+        </section>
+
+        {{-- SELECT BOOKS --}}
+        <section class="kiosk-panel">
+            <h2 class="section-title">
+                Select Books
+            </h2>
+
+            <p class="section-description">
+                Search the available books and select the books to borrow.
+            </p>
+
+            <input
+                type="search"
+                id="bookSearch"
+                class="form-control large-input mb-3"
+                placeholder="Search title, author, or call number"
+                autocomplete="off"
+            >
+
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div
+                        class="d-flex justify-content-between
+                               align-items-center mb-3"
+                    >
+                        <strong>Available Books</strong>
+
+                        <span class="count-badge">
+                            {{ $books->count() }} available
+                        </span>
+                    </div>
+
+                    <div
+                        id="bookList"
+                        class="book-list"
+                    >
+                        @forelse($books as $book)
+                            <div
+                                class="book-card"
+                                data-book-id="{{ $book->id }}"
+                                data-title="{{ strtolower($book->title ?? '') }}"
+                                data-author="{{ strtolower($book->author ?? '') }}"
+                                data-call-number="{{ strtolower($book->call_number ?? '') }}"
+                                tabindex="0"
+                            >
+                                <div
+                                    class="d-flex justify-content-between
+                                           align-items-start gap-3"
+                                >
+                                    <div>
+                                        <div class="book-title">
+                                            {{ $book->title }}
+                                        </div>
+
+                                        <p class="book-details">
+                                            Author:
+                                            {{ $book->author ?? 'Unknown' }}
+                                        </p>
+
+                                        <p class="book-details">
+                                            Call Number:
+                                            {{ $book->call_number ?? '-' }}
+                                        </p>
+                                    </div>
+
+                                    <span class="selection-icon">
+                                        <i class="fa-regular fa-square fa-xl"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="empty-selection">
+                                <i class="fa-solid fa-books"></i>
+
+                                <strong>
+                                    No available books
+                                </strong>
+
+                                <p class="mb-0 mt-1">
+                                    All books are currently borrowed.
+                                </p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div
+                        class="d-flex justify-content-between
+                               align-items-center mb-3"
+                    >
+                        <strong>Books to Borrow</strong>
+
+                        <span
+                            id="selectedCount"
+                            class="count-badge"
+                        >
+                            0 selected
+                        </span>
+                    </div>
+
+                    <div class="selected-books-box">
+                        <div
+                            id="emptySelection"
+                            class="empty-selection"
+                        >
+                            <i class="fa-solid fa-books"></i>
+
+                            <strong>No books selected</strong>
+
+                            <p class="mb-0 mt-1">
+                                Select a book from the available list.
+                            </p>
                         </div>
 
-                        <h5 class="mt-2">
-                            No books selected
-                        </h5>
+                        <div id="selectedBooksList"></div>
+                    </div>
 
-                        <p class="mb-0">
-                            Select a book above or scan its barcode.
+                    <div id="hiddenBookInputs"></div>
+                </div>
+            </div>
+        </section>
+
+        {{-- BORROW INFORMATION --}}
+        <section class="kiosk-panel">
+            <h2 class="section-title">
+                Borrow Information
+            </h2>
+
+            <p class="section-description">
+                Review the borrowing details before confirming.
+            </p>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="information-box">
+                        <div class="information-label">
+                            Books Selected
+                        </div>
+
+                        <p
+                            id="selectedInformationCount"
+                            class="information-value"
+                        >
+                            0
                         </p>
-
                     </div>
-
                 </div>
 
-            </div>
+                <div class="col-md-4">
+                    <div class="information-box">
+                        <div class="information-label">
+                            Borrowing Period
+                        </div>
 
-
-            <!-- =================================================
-                 ACTION BUTTONS
-            ================================================== -->
-
-            <div class="section-card">
-
-                <div class="row justify-content-center g-3">
-
-                    <div class="col-lg-4 col-md-6">
-
-                        <button
-                            type="submit"
-                            class="btn btn-success w-100 btn-action"
-                            id="confirmBorrowButton"
-                        >
-                            Confirm Borrow
-                        </button>
-
+                        <p class="information-value">
+                            7 Days
+                        </p>
                     </div>
-
-
-                    <div class="col-lg-4 col-md-6">
-
-                        <a
-                            href="{{ url('/monitor') }}"
-                            class="btn btn-secondary w-100 btn-action d-flex align-items-center justify-content-center"
-                        >
-                            Cancel
-                        </a>
-
-                    </div>
-
                 </div>
 
+                <div class="col-md-4">
+                    <div class="information-box">
+                        <div class="information-label">
+                            Borrow Status
+                        </div>
+
+                        <p
+                            id="borrowStatusText"
+                            class="information-value"
+                        >
+                            Waiting for RFID
+                        </p>
+                    </div>
+                </div>
             </div>
+        </section>
 
-        </form>
+        {{-- ACTIONS --}}
+        <section class="kiosk-panel action-panel">
+            <button
+                type="submit"
+                id="borrowButton"
+                class="btn btn-confirm"
+                disabled
+            >
+                <i class="fa-solid fa-check me-2"></i>
+                Confirm Borrowing
+            </button>
 
-    </div>
-
+            <a
+                href="{{ route('borrow.exit') }}"
+                class="btn-cancel"
+            >
+                <i class="fa-solid fa-xmark me-2"></i>
+                Cancel
+            </a>
+        </section>
+    </form>
 </div>
 
-
-<!-- =============================================================
-     BOOTSTRAP
-============================================================== -->
+</main>
 
 <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
 
-
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const borrowForm = document.getElementById('borrowForm');
+    const rfidInput = document.getElementById('rfid_tag_uid');
+    const rfidStatus = document.getElementById('rfidStatus');
 
-    /*
-    |--------------------------------------------------------------------------
-    | SELECTED BOOKS
-    |--------------------------------------------------------------------------
-    */
+    const borrowerNameInput =
+        document.getElementById('borrower_name');
 
-    const selectedBooks = new Map();
+    const borrowerNumberInput =
+        document.getElementById('borrower_number');
 
+    const borrowerTypeDisplay =
+        document.getElementById('borrower_type_display');
 
-    const bookSearch =
+    const borrowerIdInput =
+        document.getElementById('borrower_id');
+
+    const borrowerTypeInput =
+        document.getElementById('borrower_type');
+
+    const searchInput =
         document.getElementById('bookSearch');
 
-    const barcodeSearch =
-        document.getElementById('barcodeSearch');
+    const bookCards =
+        Array.from(document.querySelectorAll('.book-card'));
 
-    const selectedBooksArea =
-        document.getElementById('selectedBooksArea');
+    const selectedBooksList =
+        document.getElementById('selectedBooksList');
 
-    const selectedBookInputs =
-        document.getElementById('selectedBookInputs');
+    const hiddenBookInputs =
+        document.getElementById('hiddenBookInputs');
+
+    const emptySelection =
+        document.getElementById('emptySelection');
 
     const selectedCount =
         document.getElementById('selectedCount');
 
-    const borrowForm =
-        document.getElementById('borrowForm');
+    const borrowButton =
+        document.getElementById('borrowButton');
 
-    const noSearchResults =
-        document.getElementById('noSearchResults');
+    const selectedBooks = new Map();
 
+    let borrowerFound = false;
+    let scanTimer = null;
+    let activeRequest = null;
 
-    /*
-    |--------------------------------------------------------------------------
-    | SEARCH BOOKS
-    |--------------------------------------------------------------------------
-    */
-
-    bookSearch.addEventListener(
-        'input',
-        function () {
-
-            const search =
-                this.value
-                    .toLowerCase()
-                    .trim();
-
-            filterBooks(search);
-
-        }
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FILTER BOOKS
-    |--------------------------------------------------------------------------
-    */
-
-    function filterBooks(search) {
-
-        const books =
-            document.querySelectorAll('.book-item');
-
-        let visibleBooks = 0;
-
-
-        books.forEach(function (book) {
-
-            const title =
-                book.dataset.title || '';
-
-            const author =
-                book.dataset.author || '';
-
-            const isbn =
-                book.dataset.isbn || '';
-
-            const uniqueKey =
-                book.dataset.key || '';
-
-            const callNumber =
-                book.dataset.callNumber || '';
-
-
-            const match =
-                title.includes(search) ||
-                author.includes(search) ||
-                isbn.includes(search) ||
-                uniqueKey.includes(search) ||
-                callNumber.includes(search);
-
-
-            if (match) {
-
-                book.style.display = '';
-
-                visibleBooks++;
-
-            } else {
-
-                book.style.display = 'none';
-
-            }
-
-        });
-
-
-        if (
-            visibleBooks === 0 &&
-            books.length > 0
-        ) {
-
-            noSearchResults.classList.remove('d-none');
-
-        } else {
-
-            noSearchResults.classList.add('d-none');
-
-        }
-
+    function escapeHtml(value) {
+        const element = document.createElement('div');
+        element.textContent = value ?? '';
+        return element.innerHTML;
     }
 
+    function clearBorrower() {
+        borrowerNameInput.value = '';
+        borrowerNumberInput.value = '';
+        borrowerTypeDisplay.value = '';
+        borrowerIdInput.value = '';
+        borrowerTypeInput.value = '';
 
-    /*
-    |--------------------------------------------------------------------------
-    | BARCODE SCANNER
-    |--------------------------------------------------------------------------
-    |
-    | USB barcode scanners normally act like a keyboard.
-    | The scanner enters the barcode and then presses Enter.
-    |
-    */
+        borrowerFound = false;
 
-    barcodeSearch.addEventListener(
-        'keydown',
-        function (event) {
+        updateBorrowButton();
+    }
 
-            if (event.key !== 'Enter') {
-                return;
+    function setRfidStatus(message, type) {
+        const settings = {
+            waiting: {
+                className: 'text-muted',
+                icon: 'fa-id-card'
+            },
+
+            loading: {
+                className: 'text-primary',
+                icon: 'fa-spinner fa-spin'
+            },
+
+            success: {
+                className: 'borrower-found',
+                icon: 'fa-circle-check'
+            },
+
+            error: {
+                className: 'borrower-error',
+                icon: 'fa-circle-xmark'
             }
+        };
 
+        const selected =
+            settings[type] || settings.waiting;
 
-            event.preventDefault();
+        rfidStatus.className =
+            'rfid-status ' + selected.className;
 
+        rfidStatus.innerHTML =
+            '<i class="fa-solid ' +
+            selected.icon +
+            ' me-1"></i>' +
+            escapeHtml(message);
+    }
 
-            const scannedCode =
-                this.value
-                    .toLowerCase()
-                    .trim();
+    async function findBorrower(rfid) {
+        clearBorrower();
 
+        setRfidStatus(
+            'Searching the database...',
+            'loading'
+        );
 
-            if (!scannedCode) {
-                return;
-            }
-
-
-            const books =
-                document.querySelectorAll('.book-item');
-
-
-            let matchedBook = null;
-
-
-            books.forEach(function (book) {
-
-                const isbn =
-                    (book.dataset.isbn || '').trim();
-
-                const uniqueKey =
-                    (book.dataset.key || '').trim();
-
-
-                if (
-                    isbn === scannedCode ||
-                    uniqueKey === scannedCode
-                ) {
-
-                    matchedBook = book;
-
-                }
-
-            });
-
-
-            if (!matchedBook) {
-
-                alert(
-                    'Book not found in the database.'
-                );
-
-                barcodeSearch.select();
-
-                return;
-
-            }
-
-
-            const bookID =
-                Number(matchedBook.dataset.id);
-
-
-            const button =
-                document.getElementById(
-                    'select-button-' + bookID
-                );
-
-
-            if (
-                button &&
-                !selectedBooks.has(bookID)
-            ) {
-
-                button.click();
-
-            }
-
-
-            matchedBook.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-
-
-            barcodeSearch.value = '';
-
+        if (activeRequest) {
+            activeRequest.abort();
         }
-    );
 
+        activeRequest = new AbortController();
+
+        try {
+            const routeTemplate = @json(
+                route(
+                    'borrowers.findByRfid',
+                    ['rfid' => '__RFID__']
+                )
+            );
+
+            const url = routeTemplate.replace(
+                '__RFID__',
+                encodeURIComponent(rfid)
+            );
+
+            const response = await fetch(url, {
+                method: 'GET',
+
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+
+                signal: activeRequest.signal
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.found) {
+                throw new Error(
+                    data.message ||
+                    'The RFID card was not found.'
+                );
+            }
+
+            borrowerNameInput.value =
+                data.borrower_name;
+
+            borrowerNumberInput.value =
+                data.borrower_number;
+
+            borrowerIdInput.value =
+                data.borrower_id;
+
+            borrowerTypeInput.value =
+                data.borrower_type;
+
+            borrowerTypeDisplay.value =
+                data.borrower_type === 'student'
+                    ? 'Student'
+                    : 'Personnel';
+
+            borrowerFound = true;
+
+            setRfidStatus(
+                'RFID found: ' + data.borrower_name,
+                'success'
+            );
+
+            updateBorrowButton();
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                return;
+            }
+
+            clearBorrower();
+
+            setRfidStatus(
+                error.message,
+                'error'
+            );
+        } finally {
+            activeRequest = null;
+        }
+    }
 
     /*
-    |--------------------------------------------------------------------------
-    | SELECT BOOK
-    |--------------------------------------------------------------------------
-    */
+     * RFID scanner sends the number without Enter.
+     * Search 350 milliseconds after its final character.
+     */
+    rfidInput.addEventListener('input', function () {
+        clearTimeout(scanTimer);
+        clearBorrower();
 
-    function selectBook(
-        id,
-        title,
-        author,
-        isbn,
-        uniqueKey,
-        callNumber,
-        sublocation,
-        publisher,
-        year,
-        edition
-    ) {
+        const rfid = this.value.trim();
 
-        id = Number(id);
-
-
-        /*
-         * Clicking Selected again removes it.
-         */
-
-        if (selectedBooks.has(id)) {
-
-            removeBook(id);
+        if (!rfid) {
+            setRfidStatus(
+                'Waiting for RFID scan...',
+                'waiting'
+            );
 
             return;
-
         }
 
+        setRfidStatus(
+            'Reading RFID...',
+            'loading'
+        );
 
-        selectedBooks.set(id, {
+        scanTimer = setTimeout(function () {
+            findBorrower(rfid);
+        }, 350);
+    });
 
-            id: id,
+    function updateBookSelection() {
+        selectedBooksList.innerHTML = '';
+        hiddenBookInputs.innerHTML = '';
 
-            title: title,
+        selectedBooks.forEach(function (book) {
+            const selectedItem =
+                document.createElement('div');
 
-            author: author,
+            selectedItem.className =
+                'selected-item';
 
-            isbn: isbn,
+            selectedItem.innerHTML = `
+                <div>
+                    <strong>${escapeHtml(book.title)}</strong>
 
-            uniqueKey: uniqueKey,
+                    <div class="small text-muted">
+                        ${escapeHtml(book.author)}
+                    </div>
+                </div>
 
-            callNumber: callNumber,
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    data-remove-book="${book.id}"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
 
-            sublocation: sublocation,
+            selectedBooksList.appendChild(
+                selectedItem
+            );
 
-            publisher: publisher,
+            const hiddenInput =
+                document.createElement('input');
 
-            year: year,
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'book_ids[]';
+            hiddenInput.value = book.id;
 
-            edition: edition
-
+            hiddenBookInputs.appendChild(
+                hiddenInput
+            );
         });
 
+        emptySelection.style.display =
+            selectedBooks.size > 0
+                ? 'none'
+                : 'block';
 
-        /*
-         * Highlight card.
-         */
-
-        const card =
-            document.getElementById(
-                'book-card-' + id
+        selectedCount.textContent =
+            selectedBooks.size +
+            (
+                selectedBooks.size === 1
+                    ? ' selected'
+                    : ' selected'
             );
 
-
-        if (card) {
-
-            card.classList.add('selected');
-
-        }
-
-
-        /*
-         * Change button.
-         */
-
-        const button =
-            document.getElementById(
-                'select-button-' + id
-            );
-
-
-        if (button) {
-
-            button.classList.remove('btn-dark');
-
-            button.classList.add('btn-success');
-
-            button.textContent = 'Selected ✓';
-
-        }
-
-
-        renderSelectedBooks();
-
+        updateBorrowButton();
     }
 
+    function updateBorrowButton() {
+        borrowButton.disabled =
+            !borrowerFound ||
+            selectedBooks.size === 0;
+    }
 
-    /*
-    |--------------------------------------------------------------------------
-    | REMOVE BOOK
-    |--------------------------------------------------------------------------
-    */
+    function toggleBook(card) {
+        const id = card.dataset.bookId;
 
-    function removeBook(id) {
-
-        id = Number(id);
-
-
-        selectedBooks.delete(id);
-
-
-        /*
-         * Remove selected border.
-         */
-
-        const card =
-            document.getElementById(
-                'book-card-' + id
-            );
-
-
-        if (card) {
+        if (selectedBooks.has(id)) {
+            selectedBooks.delete(id);
 
             card.classList.remove('selected');
 
+            card.querySelector(
+                '.selection-icon'
+            ).innerHTML =
+                '<i class="fa-regular fa-square fa-xl"></i>';
+        } else {
+            const titleElement =
+                card.querySelector('.book-title');
+
+            const details =
+                card.querySelectorAll('.book-details');
+
+            selectedBooks.set(id, {
+                id: id,
+
+                title:
+                    titleElement.textContent.trim(),
+
+                author:
+                    details.length > 0
+                        ? details[0]
+                            .textContent
+                            .replace('Author:', '')
+                            .trim()
+                        : ''
+            });
+
+            card.classList.add('selected');
+
+            card.querySelector(
+                '.selection-icon'
+            ).innerHTML =
+                '<i class="fa-solid fa-square-check fa-xl text-danger"></i>';
         }
 
+        updateBookSelection();
+    }
 
-        /*
-         * Restore button.
-         */
+    bookCards.forEach(function (card) {
+        card.addEventListener('click', function () {
+            toggleBook(card);
+        });
 
-        const button =
-            document.getElementById(
-                'select-button-' + id
+        card.addEventListener(
+            'keydown',
+            function (event) {
+                if (
+                    event.key === 'Enter' ||
+                    event.key === ' '
+                ) {
+                    event.preventDefault();
+                    toggleBook(card);
+                }
+            }
+        );
+    });
+
+    selectedBooksList.addEventListener(
+        'click',
+        function (event) {
+            const button = event.target.closest(
+                '[data-remove-book]'
             );
 
-
-        if (button) {
-
-            button.classList.remove('btn-success');
-
-            button.classList.add('btn-dark');
-
-            button.textContent = 'Select Book';
-
-        }
-
-
-        renderSelectedBooks();
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | RENDER SELECTED BOOKS
-    |--------------------------------------------------------------------------
-    */
-
-    function renderSelectedBooks() {
-
-        /*
-         * Selected counter.
-         */
-
-        selectedCount.textContent =
-            selectedBooks.size + ' Selected';
-
-
-        /*
-         * Clear old hidden inputs.
-         */
-
-        selectedBookInputs.innerHTML = '';
-
-
-        /*
-         * Generate book_ids[].
-         */
-
-        selectedBooks.forEach(function (book) {
-
-            const input =
-                document.createElement('input');
-
-
-            input.type = 'hidden';
-
-            input.name = 'book_ids[]';
-
-            input.value = book.id;
-
-
-            selectedBookInputs.appendChild(input);
-
-        });
-
-
-        /*
-         * Empty selected books.
-         */
-
-        if (selectedBooks.size === 0) {
-
-            selectedBooksArea.innerHTML = `
-
-                <div class="text-center py-5 text-muted">
-
-                    <div style="font-size:3rem;">
-                        📚
-                    </div>
-
-                    <h5 class="mt-2">
-                        No books selected
-                    </h5>
-
-                    <p class="mb-0">
-                        Select a book above or scan its barcode.
-                    </p>
-
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-
-        /*
-         * Selected book list.
-         */
-
-        let html = '';
-
-
-        selectedBooks.forEach(function (book) {
-
-            html += `
-
-                <div class="selected-book mb-3">
-
-                    <div class="row align-items-center">
-
-                        <div class="col">
-
-                            <h5 class="fw-bold mb-1">
-
-                                ${escapeHtml(
-                                    book.title ||
-                                    'Untitled Book'
-                                )}
-
-                            </h5>
-
-
-                            <div class="text-muted mb-2">
-
-                                ${escapeHtml(
-                                    book.author ||
-                                    'Unknown Author'
-                                )}
-
-                            </div>
-
-
-                            <div class="row">
-
-
-                                <div class="col-md-6">
-
-                                    <small class="d-block mb-1">
-
-                                        <strong>
-                                            ISBN:
-                                        </strong>
-
-                                        ${escapeHtml(
-                                            book.isbn ||
-                                            'N/A'
-                                        )}
-
-                                    </small>
-
-
-                                    <small class="d-block mb-1">
-
-                                        <strong>
-                                            Book Code:
-                                        </strong>
-
-                                        ${escapeHtml(
-                                            book.uniqueKey ||
-                                            'N/A'
-                                        )}
-
-                                    </small>
-
-
-                                    <small class="d-block mb-1">
-
-                                        <strong>
-                                            Call Number:
-                                        </strong>
-
-                                        ${escapeHtml(
-                                            book.callNumber ||
-                                            'N/A'
-                                        )}
-
-                                    </small>
-
-                                </div>
-
-
-                                <div class="col-md-6">
-
-                                    <small class="d-block mb-1">
-
-                                        <strong>
-                                            Location:
-                                        </strong>
-
-                                        ${escapeHtml(
-                                            book.sublocation ||
-                                            'N/A'
-                                        )}
-
-                                    </small>
-
-
-                                    <small class="d-block mb-1">
-
-                                        <strong>
-                                            Publisher:
-                                        </strong>
-
-                                        ${escapeHtml(
-                                            book.publisher ||
-                                            'N/A'
-                                        )}
-
-                                    </small>
-
-
-                                    <small class="d-block mb-1">
-
-                                        <strong>
-                                            Year:
-                                        </strong>
-
-                                        ${escapeHtml(
-                                            book.year ||
-                                            'N/A'
-                                        )}
-
-                                    </small>
-
-
-                                    <small class="d-block mb-1">
-
-                                        <strong>
-                                            Edition:
-                                        </strong>
-
-                                        ${escapeHtml(
-                                            book.edition ||
-                                            'N/A'
-                                        )}
-
-                                    </small>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="col-auto">
-
-                            <button
-                                type="button"
-                                class="btn btn-outline-danger"
-                                onclick="removeBook(${book.id})"
-                            >
-                                Remove
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `;
-
-        });
-
-
-        selectedBooksArea.innerHTML = html;
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FORM VALIDATION
-    |--------------------------------------------------------------------------
-    */
-
-    borrowForm.addEventListener(
-        'submit',
-        function (event) {
-
-            /*
-             * At least one book must be selected.
-             */
-
-            if (selectedBooks.size === 0) {
-
-                event.preventDefault();
-
-
-                alert(
-                    'Please select at least one book before confirming the borrow.'
-                );
-
-
-                document
-                    .getElementById('booksContainer')
-                    .scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-
-
+            if (!button) {
                 return;
-
             }
 
+            const bookId =
+                button.dataset.removeBook;
 
-            /*
-             * Student ID.
-             */
+            const card = document.querySelector(
+                '.book-card[data-book-id="' +
+                bookId +
+                '"]'
+            );
 
-            const studentID =
-                document
-                    .getElementById('student_id')
-                    .value
-                    .trim();
-
-
-            if (!studentID) {
-
-                event.preventDefault();
-
-
-                alert(
-                    'Please enter or scan the Student ID.'
-                );
-
-
-                document
-                    .getElementById('student_id')
-                    .focus();
-
-
-                return;
-
+            if (card) {
+                toggleBook(card);
             }
-
-
-            /*
-             * Student Name.
-             */
-
-            const studentName =
-                document
-                    .getElementById('student_name')
-                    .value
-                    .trim();
-
-
-            if (!studentName) {
-
-                event.preventDefault();
-
-
-                alert(
-                    'Please enter the student name.'
-                );
-
-
-                document
-                    .getElementById('student_name')
-                    .focus();
-
-
-                return;
-
-            }
-
         }
     );
 
+    searchInput.addEventListener('input', function () {
+        const query =
+            this.value.trim().toLowerCase();
 
-    /*
-    |--------------------------------------------------------------------------
-    | ESCAPE HTML
-    |--------------------------------------------------------------------------
-    */
+        bookCards.forEach(function (card) {
+            const searchText = [
+                card.dataset.title,
+                card.dataset.author,
+                card.dataset.callNumber
+            ].join(' ');
 
-    function escapeHtml(value) {
+            card.style.display =
+                searchText.includes(query)
+                    ? 'block'
+                    : 'none';
+        });
+    });
 
-        if (
-            value === null ||
-            value === undefined
-        ) {
+    borrowForm.addEventListener('submit', function (event) {
+        if (!borrowerFound) {
+            event.preventDefault();
 
-            return '';
+            alert(
+                'Please scan a registered student or personnel RFID card.'
+            );
 
+            rfidInput.focus();
+            rfidInput.select();
+
+            return;
         }
 
+        if (selectedBooks.size === 0) {
+            event.preventDefault();
 
-        const div =
-            document.createElement('div');
+            alert(
+                'Please select at least one book.'
+            );
 
+            return;
+        }
 
-        div.textContent =
-            String(value);
+        borrowButton.disabled = true;
 
+        borrowButton.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin me-2"></i>' +
+            'Processing...';
+    });
 
-        return div.innerHTML;
-
-    }
-
+    updateBookSelection();
+    rfidInput.focus();
+});
 </script>
 
 </body>
 </html>
-```
