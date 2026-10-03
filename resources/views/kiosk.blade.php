@@ -2,28 +2,19 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     >
-
-    <!-- =====================================================
-         CSRF TOKEN
-    ====================================================== -->
 
     <meta
         name="csrf-token"
         content="{{ csrf_token() }}"
     >
 
-
-    <title>
-        Book Borrow / Return
-    </title>
-
+    <title>Book Borrow / Return</title>
 
     <!-- Bootstrap -->
     <link
@@ -31,30 +22,39 @@
         rel="stylesheet"
     >
 
-
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
-
     <style>
-
         /* =====================================================
-           BODY
+           GLOBAL – NO SCROLL, FILL VIEWPORT
         ====================================================== */
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
         body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
 
-            min-height: 100vh;
-
+        body {
             background:
                 linear-gradient(
                     135deg,
@@ -68,65 +68,125 @@
                 Helvetica,
                 sans-serif;
 
+            color: #252525;
         }
 
+        /* =====================================================
+           KIOSK SHELL – full viewport, flex column
+        ====================================================== */
+
+        .kiosk-shell {
+            height: 100vh;
+            width: 100vw;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: clamp(8px, 2vh, 24px) clamp(10px, 3vw, 40px);
+
+            gap: clamp(8px, 2vh, 24px);
+        }
 
         /* =====================================================
-           TITLE
+           LOGO – scales with viewport height & width
+        ====================================================== */
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            flex-shrink: 0;
+        }
+
+        .kiosk-logo {
+            width: clamp(70px, 11vh, 140px);
+            height: clamp(70px, 11vh, 140px);
+
+            object-fit: contain;
+        }
+
+        /* =====================================================
+           TITLE – fluid typography, compact
         ====================================================== */
 
         .title {
+            flex-shrink: 0;
 
-            font-size: 3.8rem;
-
+            font-size: clamp(1.1rem, 4vh, 2.8rem);
             font-weight: 500;
 
-            letter-spacing: 5px;
+            letter-spacing: clamp(1px, 0.5vw, 4px);
+            line-height: 1.25;
 
-            line-height: 1.4;
-
-            color: #252525;
-
-            margin-bottom: 60px;
-
+            text-align: center;
             text-transform: uppercase;
 
+            color: #252525;
         }
 
-
         /* =====================================================
-           LOGO
+           BUTTON ROW – takes 60% of viewport height
         ====================================================== */
 
-        .kiosk-logo {
+        .button-row {
+            flex: 0 0 auto;
 
-            width: 220px;
+            height: 60vh;                /* ← 60% of screen height */
+            max-height: 60vh;
 
-            height: auto;
+            width: 100%;
+            max-width: 1000px;
 
-            display: block;
+            display: flex;
+            flex-wrap: wrap;
 
-            margin:
-                0 auto
-                30px auto;
+            gap: clamp(10px, 2vw, 30px);
 
+            align-items: stretch;
+            justify-content: center;
+
+            min-height: 0;
         }
 
+        /* =====================================================
+           BUTTON COLUMN – equal width, full height
+        ====================================================== */
+
+        .button-col {
+            flex: 1 1 0;
+
+            min-width: 160px;
+            max-width: 480px;
+
+            display: flex;
+
+            min-height: 0;
+        }
+
+        .button-col form {
+            flex: 1;
+            display: flex;
+        }
 
         /* =====================================================
-           KIOSK BUTTON
+           KIOSK BUTTON – fills its column (100% of 60vh row)
         ====================================================== */
 
         .kiosk-box {
+            flex: 1;
 
             width: 100%;
+            height: 100%;
 
-            height: 280px;
-
-            border: 2px solid
+            border:
+                2px solid
                 rgba(255, 255, 255, 0.65);
 
-            border-radius: 25px;
+            border-radius: clamp(14px, 2.2vh, 24px);
 
             background:
                 linear-gradient(
@@ -139,24 +199,12 @@
 
             text-decoration: none;
 
-            font-family:
-                'Montserrat',
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            font-size: 3rem;
-
-            font-weight: 600;
-
-            letter-spacing: 8px;
-
-            text-transform: uppercase;
+            font-family: inherit;
 
             cursor: pointer;
 
             box-shadow:
-                0 18px 35px
+                0 14px 28px
                 rgba(128, 62, 84, 0.18);
 
             transition:
@@ -164,83 +212,74 @@
                 transform 0.25s ease,
                 box-shadow 0.25s ease;
 
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
 
         /* =====================================================
            BUTTON INNER CONTENT
         ====================================================== */
 
         .kiosk-button-content {
-
             display: flex;
-
             flex-direction: column;
 
             justify-content: center;
-
             align-items: center;
 
-            gap: 25px;
+            gap: clamp(8px, 1.8vh, 22px);
 
+            padding: clamp(10px, 2vh, 24px);
         }
 
-
         /* =====================================================
-           BUTTON ICON
+           BUTTON ICON – scales with the 60vh row
         ====================================================== */
 
         .kiosk-icon {
-
-            width: 85px;
-
-            height: 85px;
+            width: clamp(48px, 12vh, 110px);
+            height: clamp(48px, 12vh, 110px);
 
             display: flex;
-
             justify-content: center;
-
             align-items: center;
 
             border:
-
                 3px solid
                 rgba(255, 255, 255, 0.9);
 
             border-radius: 50%;
 
-            font-size: 2.5rem;
+            font-size: clamp(1.3rem, 4.2vh, 2.8rem);
 
             color: #ffffff;
 
+            flex-shrink: 0;
         }
 
-
         /* =====================================================
-           BUTTON TEXT
+           BUTTON TEXT – scales with the 60vh row
         ====================================================== */
 
         .kiosk-button-text {
-
             display: block;
 
-            font-size: 3rem;
-
+            font-size: clamp(1.1rem, 4.8vh, 3rem);
             font-weight: 600;
 
-            letter-spacing: 8px;
-
+            letter-spacing: clamp(2px, 0.7vw, 8px);
             line-height: 1;
 
+            text-align: center;
+            white-space: nowrap;
         }
-
 
         /* =====================================================
            BUTTON HOVER
         ====================================================== */
 
         .kiosk-box:hover {
-
             background:
                 linear-gradient(
                     135deg,
@@ -250,802 +289,242 @@
 
             color: #ffffff;
 
-            transform:
-                translateY(-7px);
+            transform: translateY(-5px);
 
             box-shadow:
-                0 25px 45px
+                0 22px 38px
                 rgba(128, 62, 84, 0.25);
-
         }
-
 
         /* =====================================================
            BUTTON ACTIVE
         ====================================================== */
 
         .kiosk-box:active {
-
-            transform:
-                scale(0.97);
+            transform: scale(0.97);
 
             box-shadow:
                 0 10px 20px
                 rgba(128, 62, 84, 0.20);
-
         }
-
 
         /* =====================================================
            BUTTON FOCUS
         ====================================================== */
 
         .kiosk-box:focus {
-
             outline:
-                5px solid
+                4px solid
                 rgba(222, 105, 145, 0.25);
 
-            outline-offset: 6px;
-
+            outline-offset: 4px;
         }
 
-
         /* =====================================================
-           INVISIBLE RFID SCANNER
+           MOBILE – stack buttons, keep 60vh total for the row
         ====================================================== */
 
-        #rfidScanner {
+        @media (max-width: 640px) {
 
-            position: fixed;
+            .button-row {
+                flex-direction: column;
 
-            left: -9999px;
+                height: 60vh;
+                max-height: 60vh;
 
-            top: -9999px;
+                gap: clamp(8px, 1.2vh, 14px);
 
-            width: 1px;
-
-            height: 1px;
-
-            opacity: 0;
-
-            border: 0;
-
-            padding: 0;
-
-            margin: 0;
-
-            outline: none;
-
-        }
-
-
-        /* =====================================================
-           MOBILE
-        ====================================================== */
-
-        @media(max-width: 992px) {
-
-            .title {
-
-                font-size: 2.7rem;
-
-                letter-spacing: 3px;
-
-                margin-bottom: 40px;
-
+                max-width: 100%;
             }
 
-
-            .kiosk-logo {
-
-                width: 150px;
-
+            .button-col {
+                flex: 1 1 0;             /* each button gets half of 60vh */
+                max-width: 100%;
+                width: 100%;
+                min-width: 0;
             }
-
 
             .kiosk-box {
-
-                height: 210px;
-
-                border-radius: 20px;
-
+                border-radius: 14px;
             }
-
-
-            .kiosk-icon {
-
-                width: 65px;
-
-                height: 65px;
-
-                font-size: 2rem;
-
-            }
-
-
-            .kiosk-button-text {
-
-                font-size: 2.2rem;
-
-                letter-spacing: 5px;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           SMALL MOBILE
-        ====================================================== */
-
-        @media(max-width: 576px) {
-
-            .title {
-
-                font-size: 2rem;
-
-                letter-spacing: 2px;
-
-            }
-
-
-            .kiosk-logo {
-
-                width: 120px;
-
-            }
-
-
-            .kiosk-box {
-
-                height: 170px;
-
-            }
-
 
             .kiosk-button-content {
-
-                gap: 15px;
-
+                flex-direction: row;     /* icon beside text */
+                gap: clamp(8px, 2vw, 16px);
+                padding: clamp(8px, 1.5vh, 16px);
             }
-
 
             .kiosk-icon {
+                width: clamp(34px, 9vh, 60px);
+                height: clamp(34px, 9vh, 60px);
 
-                width: 55px;
+                font-size: clamp(0.9rem, 3vh, 1.7rem);
 
-                height: 55px;
-
-                font-size: 1.6rem;
-
+                border-width: 2px;
             }
-
 
             .kiosk-button-text {
-
-                font-size: 1.7rem;
-
-                letter-spacing: 4px;
-
+                font-size: clamp(0.9rem, 4vh, 1.8rem);
+                letter-spacing: clamp(2px, 0.7vw, 4px);
             }
-
         }
 
+        /* =====================================================
+           VERY SHORT SCREENS (landscape phones, etc.)
+        ====================================================== */
+
+        @media (max-height: 520px) {
+
+            .kiosk-shell {
+                padding: 4px 10px;
+                gap: 4px;
+            }
+
+            .kiosk-logo {
+                width: clamp(40px, 8vh, 70px);
+                height: clamp(40px, 8vh, 70px);
+            }
+
+            .title {
+                font-size: clamp(0.8rem, 3vh, 1.4rem);
+            }
+
+            .button-row {
+                height: 62vh;             /* slightly more on very short screens */
+                max-height: 62vh;
+            }
+
+            .kiosk-button-content {
+                gap: 4px;
+                padding: 6px;
+            }
+
+            .kiosk-icon {
+                width: clamp(28px, 7vh, 44px);
+                height: clamp(28px, 7vh, 44px);
+                font-size: clamp(0.7rem, 2.2vh, 1.2rem);
+                border-width: 2px;
+            }
+
+            .kiosk-button-text {
+                font-size: clamp(0.75rem, 2.8vh, 1.3rem);
+                letter-spacing: clamp(1px, 0.5vw, 3px);
+            }
+        }
     </style>
-
 </head>
-
 
 <body>
 
+<div class="kiosk-shell">
 
-<!-- =====================================================
-     INVISIBLE RFID SCANNER INPUT
-====================================================== -->
-
-<input
-    type="text"
-    id="rfidScanner"
-    autocomplete="off"
-    autofocus
->
-
-
-<div
-    class="
-        container-fluid
-        min-vh-100
-        d-flex
-        justify-content-center
-        align-items-center
-    "
->
-
-
-    <div class="container-xxl text-center">
-
-
-        <!-- =====================================================
-             LOGO
-        ====================================================== -->
-
+    <!-- Logo -->
+    <div class="logo-container">
         <img
-            src="{{ asset('images/lclogo.png') }}"
+            src="{{ asset('Image/LC_LOGO.png') }}"
             class="kiosk-logo"
-            alt="Library Logo"
+            alt="Lourdes College Logo"
         >
+    </div>
 
+    <!-- Title -->
+    <h1 class="title">
+        Lourdes College
+        <br>
+        Book Borrow / Return
+    </h1>
 
-        <!-- =====================================================
-             TITLE
-        ====================================================== -->
+    <!-- Borrow and Return Buttons – 60% of screen height -->
+    <div class="button-row">
 
-        <h1 class="title">
+        <!-- Borrow -->
+        <div class="button-col">
+            <form
+                action="{{ route('borrow.enter') }}"
+                method="POST"
+            >
+                @csrf
 
-            LOURDES COLLEGE
-
-            <br>
-
-            BOOK BORROW / RETURN
-
-        </h1>
-
-
-        <!-- =====================================================
-             BUTTONS
-        ====================================================== -->
-
-        <div
-            class="
-                row
-                justify-content-center
-                gx-5
-                gy-4
-            "
-        >
-
-
-            <!-- =================================================
-                 BORROW
-            ================================================== -->
-
-            <div class="col-lg-6">
-
-
-                <form
-                    action="{{ route('borrow.enter') }}"
-                    method="POST"
+                <button
+                    type="submit"
+                    class="kiosk-box"
                 >
+                    <div class="kiosk-button-content">
 
-                    @csrf
-
-
-                    <button
-                        type="submit"
-                        class="kiosk-box"
-                    >
-
-                        <div class="kiosk-button-content">
-
-
-                            <!-- Book Icon -->
-
-                            <div class="kiosk-icon">
-
-                                &#128214;
-
-                            </div>
-
-
-                            <!-- Text -->
-
-                            <span class="kiosk-button-text">
-
-                                BORROW
-
-                            </span>
-
-
+                        <div class="kiosk-icon">
+                            &#128214;
                         </div>
 
-                    </button>
+                        <span class="kiosk-button-text">
+                            Borrow
+                        </span>
 
-
-                </form>
-
-
-            </div>
-
-
-            <!-- =================================================
-                 RETURN
-            ================================================== -->
-
-            <div class="col-lg-6">
-
-
-                <form
-                    action="{{ route('return.enter') }}"
-                    method="POST"
-                >
-
-                    @csrf
-
-
-                    <button
-                        type="submit"
-                        class="kiosk-box"
-                    >
-
-                        <div class="kiosk-button-content">
-
-
-                            <!-- Return Icon -->
-
-                            <div class="kiosk-icon">
-
-                                &#8634;
-
-                            </div>
-
-
-                            <!-- Text -->
-
-                            <span class="kiosk-button-text">
-
-                                RETURN
-
-                            </span>
-
-
-                        </div>
-
-                    </button>
-
-
-                </form>
-
-
-            </div>
-
-
+                    </div>
+                </button>
+            </form>
         </div>
 
+        <!-- Return -->
+        <div class="button-col">
+            <form
+                action="{{ route('return.enter') }}"
+                method="POST"
+            >
+                @csrf
+
+                <button
+                    type="submit"
+                    class="kiosk-box"
+                >
+                    <div class="kiosk-button-content">
+
+                        <div class="kiosk-icon">
+                            &#8634;
+                        </div>
+
+                        <span class="kiosk-button-text">
+                            Return
+                        </span>
+
+                    </div>
+                </button>
+            </form>
+        </div>
 
     </div>
 
-
 </div>
 
-
-<!-- =====================================================
-     BOOTSTRAP
-====================================================== -->
-
+<!-- Bootstrap -->
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
 ></script>
 
-
-<!-- =====================================================
-     RFID SCANNER
-====================================================== -->
-
 <script>
-
 document.addEventListener('DOMContentLoaded', function () {
-
-
     /*
-    |--------------------------------------------------------------------------
-    | Elements
-    |--------------------------------------------------------------------------
-    */
-
-    const scanner =
-        document.getElementById('rfidScanner');
-
-
-    const csrfToken =
-        document
-            .querySelector('meta[name="csrf-token"]')
-            .getAttribute('content');
-
-
-    let scanTimer = null;
-
-    let processing = false;
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Focus Scanner
-    |--------------------------------------------------------------------------
-    */
-
-    function focusScanner() {
-
-        if (!processing) {
-
-            scanner.focus();
-
-        }
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Initial Focus
-    |--------------------------------------------------------------------------
-    */
-
-    setTimeout(function () {
-
-        focusScanner();
-
-    }, 300);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Refocus When Browser Window Becomes Active
-    |--------------------------------------------------------------------------
-    */
-
-    window.addEventListener('focus', function () {
-
-        setTimeout(function () {
-
-            focusScanner();
-
-        }, 200);
-
+     * USB RFID readers usually send Enter after the card number. If a kiosk
+     * button still has focus, that Enter would submit its form and redirect.
+     * Only an intentional mouse/touch click should open Borrow or Return.
+     */
+    document.querySelectorAll('.kiosk-box').forEach(function (button) {
+        button.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                button.blur();
+            }
+        });
     });
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Refocus After Clicking Empty Area
-    |--------------------------------------------------------------------------
-    */
-
-    document.addEventListener('click', function (event) {
-
-        if (
-            event.target.tagName !== 'BUTTON' &&
-            event.target.tagName !== 'A'
-        ) {
-
-            setTimeout(function () {
-
-                focusScanner();
-
-            }, 200);
-
-        }
-
+    document.querySelectorAll('form[action]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!event.submitter) {
+                event.preventDefault();
+            }
+        });
     });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Detect RFID Typing
-    |--------------------------------------------------------------------------
-    */
-
-    scanner.addEventListener('input', function () {
-
-        clearTimeout(scanTimer);
-
-
-        /*
-         * Wait briefly until scanner
-         * finishes typing the RFID.
-         */
-
-        scanTimer = setTimeout(function () {
-
-            processRFID();
-
-        }, 200);
-
-    });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | RFID Reader ENTER Key
-    |--------------------------------------------------------------------------
-    */
-
-    scanner.addEventListener('keydown', function (event) {
-
-        if (event.key === 'Enter') {
-
-            event.preventDefault();
-
-            clearTimeout(scanTimer);
-
-            processRFID();
-
-        }
-
-    });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Process RFID
-    |--------------------------------------------------------------------------
-    */
-
-    async function processRFID() {
-
-
-        /*
-         * Prevent double scan/request
-         */
-
-        if (processing) {
-
-            return;
-
-        }
-
-
-        const rfid =
-            scanner.value.trim();
-
-
-        /*
-         * Clear scanner immediately
-         */
-
-        scanner.value = '';
-
-
-        /*
-         * Ignore empty values
-         */
-
-        if (!rfid) {
-
-            focusScanner();
-
-            return;
-
-        }
-
-
-        processing = true;
-
-
-        console.log(
-            'RFID SCANNED:',
-            rfid
-        );
-
-
-        try {
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Send RFID To Laravel
-            |--------------------------------------------------------------------------
-            */
-
-            const response = await fetch(
-
-                '{{ route("attendance.scan") }}',
-
-                {
-
-                    method: 'POST',
-
-                    credentials: 'same-origin',
-
-                    headers: {
-
-                        'Content-Type':
-                            'application/json',
-
-                        'Accept':
-                            'application/json',
-
-                        'X-CSRF-TOKEN':
-                            csrfToken,
-
-                        'X-Requested-With':
-                            'XMLHttpRequest'
-
-                    },
-
-                    body: JSON.stringify({
-
-                        rfid_tag_uid: rfid
-
-                    })
-
-                }
-
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Read Laravel Response
-            |--------------------------------------------------------------------------
-            */
-
-            let data;
-
-
-            try {
-
-                data =
-                    await response.json();
-
-            }
-
-            catch (jsonError) {
-
-                console.error(
-                    'Invalid JSON:',
-                    jsonError
-                );
-
-
-                throw new Error(
-                    'Laravel returned an invalid response.'
-                );
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Laravel Error
-            |--------------------------------------------------------------------------
-            */
-
-            if (!response.ok) {
-
-                throw new Error(
-
-                    data.message ??
-                    'Unable to record attendance.'
-
-                );
-
-            }
-
-
-            console.log(
-                'ATTENDANCE RESPONSE:',
-                data
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | CLOCK IN
-            |--------------------------------------------------------------------------
-            */
-
-            if (data.action === 'clock_in') {
-
-                alert(
-
-                    data.name +
-
-                    '\n\nTIME IN SUCCESSFUL' +
-
-                    '\n\nRFID: ' +
-
-                    data.rfid_tag_uid
-
-                );
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | CLOCK OUT
-            |--------------------------------------------------------------------------
-            */
-
-            else if (data.action === 'clock_out') {
-
-                alert(
-
-                    data.name +
-
-                    '\n\nTIME OUT SUCCESSFUL' +
-
-                    '\n\nRFID: ' +
-
-                    data.rfid_tag_uid
-
-                );
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Other Successful Response
-            |--------------------------------------------------------------------------
-            */
-
-            else {
-
-                alert(
-
-                    data.message ??
-                    'Attendance recorded successfully.'
-
-                );
-
-            }
-
-        }
-
-
-        catch (error) {
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Error
-            |--------------------------------------------------------------------------
-            */
-
-            console.error(
-                'RFID ERROR:',
-                error
-            );
-
-
-            alert(
-                error.message
-            );
-
-        }
-
-
-        finally {
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Reset Scanner
-            |--------------------------------------------------------------------------
-            */
-
-            processing = false;
-
-            scanner.value = '';
-
-
-            setTimeout(function () {
-
-                focusScanner();
-
-            }, 300);
-
-        }
-
-    }
-
 });
-
 </script>
 
-
 </body>
-
 </html>

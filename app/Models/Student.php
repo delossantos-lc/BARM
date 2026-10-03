@@ -18,9 +18,15 @@ class Student extends Model
         'year_level',
         'course_program',
         'rfid_tag_uid',
-        'contact_information',
+        'fingerprint_id',
+        'email',
+        
     ];
 
+
+    protected $casts = [
+    'fingerprint_id' => 'integer',
+];
     /*
     |--------------------------------------------------------------------------
     | ALL ATTENDANCE RECORDS
@@ -41,6 +47,14 @@ class Student extends Model
     |--------------------------------------------------------------------------
     */
 
+
+    public function reservations(): HasMany
+{
+    return $this->hasMany(
+        BookReservation::class,
+        'student_record_id'
+    );
+}
     public function latestAttendance(): MorphOne
     {
         return $this->morphOne(

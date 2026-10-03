@@ -21,7 +21,7 @@ return new class extends Migration
             // Example: 2088350422
             $table->string('rfid_tag_uid')->nullable()->unique();
 
-            $table->string('contact_information')->nullable();
+            $table->string('email')->nullable();
 
             $table->timestamps();
         });

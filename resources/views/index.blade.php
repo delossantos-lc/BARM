@@ -7,183 +7,598 @@
 >
 
 <style>
-    .dashboard-panel {
-        height: 100%;
-        border: none;
-        border-radius: 12px;
-        overflow: hidden;
+    /* ============================================================
+       DASHBOARD – MODERN & RESPONSIVE
+       ============================================================ */
+
+    :root {
+        --primary: #7571f9;
+        --primary-light: rgba(117, 113, 249, 0.12);
+        --primary-soft: rgba(117, 113, 249, 0.18);
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.09);
+        --radius: 14px;
+        --radius-sm: 10px;
+        --transition: 0.25s ease;
+        --text-dark: #2d2d3a;
+        --text-muted: #7a7a8c;
+        --bg-soft: #f8f9fd;
     }
 
-    .dashboard-panel .card-body {
-        padding: 25px;
+    /* ---------- GLOBAL ---------- */
+    body {
+        background: var(--bg-soft);
     }
 
+    .content-body {
+        padding: 1.2rem 1.5rem 2rem;
+    }
+
+    @media (max-width: 767px) {
+        .content-body {
+            padding: 0.8rem 0.8rem 1.5rem;
+        }
+    }
+
+    /* ---------- PAGE TITLE ---------- */
+    .page-titles {
+        background: transparent;
+        padding: 0 0 0.5rem 0;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-titles .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .page-titles .breadcrumb-item a {
+        color: var(--text-muted);
+        font-weight: 500;
+        transition: color var(--transition);
+    }
+
+    .page-titles .breadcrumb-item a:hover {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    /* ---------- SUMMARY CARDS ---------- */
     .summary-card {
-        min-height: 170px;
+        min-height: 150px;
         border: none;
-        border-radius: 12px;
+        border-radius: var(--radius);
         overflow: hidden;
+        transition: transform var(--transition), box-shadow var(--transition);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+    }
+
+    .summary-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
     }
 
     .summary-card .card-body {
         position: relative;
-        padding: 25px;
+        padding: 22px 24px;
+        z-index: 1;
+    }
+
+    .summary-card .card-title {
+        font-size: 0.95rem;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        opacity: 0.9;
+        margin-bottom: 6px;
+    }
+
+    .summary-card h2 {
+        font-size: 2.4rem;
+        font-weight: 700;
+        margin-bottom: 2px;
+        line-height: 1.1;
+    }
+
+    .summary-card p {
+        font-size: 0.82rem;
+        opacity: 0.8;
+        margin-bottom: 0;
     }
 
     .summary-icon {
         position: absolute;
-        right: 20px;
-        bottom: 20px;
-        font-size: 45px;
-        opacity: 0.35;
+        right: 18px;
+        bottom: 18px;
+        font-size: 48px;
+        opacity: 0.22;
+        transition: opacity var(--transition), transform var(--transition);
+        pointer-events: none;
     }
 
+    .summary-card:hover .summary-icon {
+        opacity: 0.35;
+        transform: scale(1.08);
+    }
+
+    /* Gradient backgrounds (kept, but softer) */
+    .gradient-1 {
+        background: linear-gradient(135deg, #6a5af9 0%, #8b7bfa 100%);
+    }
+
+    .gradient-2 {
+        background: linear-gradient(135deg, #f97b8b 0%, #fa9a9a 100%);
+    }
+
+    .gradient-3 {
+        background: linear-gradient(135deg, #4bc9c9 0%, #6ed6d6 100%);
+    }
+
+    .gradient-4 {
+        background: linear-gradient(135deg, #f9a44a 0%, #fbbf6e 100%);
+    }
+
+    /* ---------- ANALYTICS CARDS ---------- */
     .analytics-card {
         border: none;
-        border-radius: 12px;
-        min-height: 145px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: var(--radius);
+        min-height: 130px;
+        background: #ffffff;
+        transition: transform var(--transition), box-shadow var(--transition);
+        box-shadow: var(--shadow-sm);
     }
 
     .analytics-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--shadow-md);
+    }
+
+    .analytics-card .card-body {
+        padding: 20px 22px;
     }
 
     .analytics-number {
-        font-size: 32px;
+        font-size: 2rem;
         font-weight: 700;
-        color: #333;
+        color: var(--text-dark);
+        line-height: 1.2;
+        letter-spacing: -0.5px;
     }
 
     .analytics-label {
-        color: #6c757d;
-        font-size: 14px;
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+        margin-top: 2px;
+    }
+
+    .analytics-card small.text-muted {
+        font-size: 0.75rem;
     }
 
     .analytics-icon {
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 24px;
-        background: rgba(117, 113, 249, 0.12);
-        color: #7571f9;
+        font-size: 22px;
+        background: var(--primary-light);
+        color: var(--primary);
+        flex-shrink: 0;
+        transition: background var(--transition);
     }
 
+    .analytics-card:hover .analytics-icon {
+        background: var(--primary-soft);
+    }
+
+    /* ---------- SECTION TITLES ---------- */
     .section-title {
         font-weight: 700;
-        color: #333;
-        margin-bottom: 5px;
+        color: var(--text-dark);
+        font-size: 1.15rem;
+        margin-bottom: 3px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-title i {
+        color: var(--primary);
+        font-size: 1.1rem;
+        width: 22px;
+        text-align: center;
     }
 
     .section-description {
-        color: #6c757d;
+        color: var(--text-muted);
+        font-size: 0.85rem;
         margin-bottom: 0;
     }
 
+    /* ---------- PANELS ---------- */
+    .dashboard-panel {
+        height: 100%;
+        border: none;
+        border-radius: var(--radius);
+        background: #ffffff;
+        box-shadow: var(--shadow-sm);
+        transition: box-shadow var(--transition);
+    }
+
+    .dashboard-panel:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .dashboard-panel .card-body {
+        padding: 24px 26px;
+    }
+
+    @media (max-width: 767px) {
+        .dashboard-panel .card-body {
+            padding: 18px 16px;
+        }
+    }
+
+    /* ---------- TOP BORROWER ---------- */
     .top-borrower-avatar {
-        width: 95px;
-        height: 95px;
+        width: 90px;
+        height: 90px;
         border-radius: 50%;
         display: flex;
         justify-content: center;
         align-items: center;
-        margin: 0 auto 20px;
-        background: rgba(117, 113, 249, 0.12);
-        color: #7571f9;
-        font-size: 40px;
+        margin: 0 auto 18px;
+        background: var(--primary-light);
+        color: var(--primary);
+        font-size: 38px;
+        transition: transform var(--transition);
+    }
+
+    .top-borrower-avatar:hover {
+        transform: scale(1.04);
     }
 
     .borrow-count {
-        font-size: 42px;
+        font-size: 2.8rem;
         font-weight: 700;
-        color: #7571f9;
-        line-height: 1;
+        color: var(--primary);
+        line-height: 1.1;
     }
 
-    .borrower-table th {
-        border-top: none;
-        color: #555;
-        font-weight: 700;
-        white-space: nowrap;
+    .top-borrower-info .badge {
+        font-size: 0.8rem;
+        padding: 6px 16px;
+        border-radius: 30px;
+        font-weight: 500;
     }
 
-    .borrower-table td {
-        vertical-align: middle;
-    }
-
-    .rank-number {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: 700;
-        background: #f1f1f1;
-    }
-
-    .rank-one {
-        background: #ffc107;
-        color: white;
-    }
-
-    .rank-two {
-        background: #6c757d;
-        color: white;
-    }
-
-    .rank-three {
-        background: #cd7f32;
-        color: white;
-    }
-
-    .chart-container {
-        position: relative;
-        height: 350px;
-        width: 100%;
-    }
-
-    .trend-chart-container {
-        position: relative;
-        height: 300px;
-        width: 100%;
-    }
-
+    /* ---------- BOOK LIST ---------- */
     .popular-book {
-        padding: 13px 0;
-        border-bottom: 1px solid #eeeeee;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f5;
+        transition: background var(--transition);
+        border-radius: 6px;
     }
 
     .popular-book:last-child {
         border-bottom: none;
     }
 
+    .popular-book:hover {
+        background: #fafaff;
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
     .book-rank {
-        width: 35px;
-        height: 35px;
-        background: rgba(117, 113, 249, 0.12);
-        color: #7571f9;
-        border-radius: 8px;
+        width: 34px;
+        height: 34px;
+        background: var(--primary-light);
+        color: var(--primary);
+        border-radius: 10px;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-weight: bold;
+        font-weight: 700;
+        font-size: 0.85rem;
         margin-right: 12px;
         flex-shrink: 0;
+        transition: background var(--transition);
     }
 
+    .popular-book:hover .book-rank {
+        background: var(--primary-soft);
+    }
+
+    /* ---------- LEADERBOARD TABLE ---------- */
+    .borrower-table {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+    }
+
+    .borrower-table th {
+        border-top: none;
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+        padding: 12px 10px;
+        border-bottom: 2px solid #f0f0f5;
+    }
+
+    .borrower-table td {
+        vertical-align: middle;
+        padding: 12px 10px;
+        border-top: 1px solid #f5f5fa;
+    }
+
+    .borrower-table tbody tr {
+        transition: background var(--transition);
+    }
+
+    .borrower-table tbody tr:hover {
+        background: #fafaff;
+    }
+
+    .rank-number {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 700;
+        font-size: 0.82rem;
+        background: #f1f1f6;
+        color: var(--text-dark);
+        transition: transform var(--transition);
+    }
+
+    .rank-number.rank-one {
+        background: #ffc107;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(255, 193, 7, 0.35);
+    }
+
+    .rank-number.rank-two {
+        background: #8e9aab;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(108, 117, 125, 0.25);
+    }
+
+    .rank-number.rank-three {
+        background: #cd7f32;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(205, 127, 50, 0.25);
+    }
+
+    .borrower-table .badge {
+        font-size: 0.72rem;
+        padding: 5px 12px;
+        border-radius: 30px;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+    }
+
+    /* ---------- CHART CONTAINERS ---------- */
+    .chart-container {
+        position: relative;
+        height: 340px;
+        width: 100%;
+    }
+
+    .trend-chart-container {
+        position: relative;
+        height: 290px;
+        width: 100%;
+    }
+
+    /* ---------- RESPONSIVE ADJUSTMENTS ---------- */
     @media (max-width: 991px) {
         .chart-container {
-            height: 300px;
+            height: 280px;
         }
 
         .trend-chart-container {
-            height: 280px;
+            height: 250px;
         }
+
+        .summary-card {
+            min-height: 130px;
+        }
+
+        .summary-card h2 {
+            font-size: 2rem;
+        }
+
+        .summary-icon {
+            font-size: 38px;
+            right: 14px;
+            bottom: 14px;
+        }
+
+        .analytics-number {
+            font-size: 1.7rem;
+        }
+
+        .analytics-icon {
+            width: 46px;
+            height: 46px;
+            font-size: 19px;
+        }
+
+        .borrow-count {
+            font-size: 2.3rem;
+        }
+
+        .top-borrower-avatar {
+            width: 76px;
+            height: 76px;
+            font-size: 32px;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .content-body {
+            padding: 0.6rem 0.6rem 1.2rem;
+        }
+
+        .summary-card {
+            min-height: 110px;
+        }
+
+        .summary-card .card-body {
+            padding: 16px 18px;
+        }
+
+        .summary-card h2 {
+            font-size: 1.7rem;
+        }
+
+        .summary-card .card-title {
+            font-size: 0.82rem;
+        }
+
+        .summary-card p {
+            font-size: 0.72rem;
+        }
+
+        .summary-icon {
+            font-size: 30px;
+            right: 12px;
+            bottom: 12px;
+        }
+
+        .analytics-card .card-body {
+            padding: 16px;
+        }
+
+        .analytics-number {
+            font-size: 1.4rem;
+        }
+
+        .analytics-label {
+            font-size: 0.72rem;
+        }
+
+        .analytics-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
+            border-radius: 10px;
+        }
+
+        .dashboard-panel .card-body {
+            padding: 16px 14px;
+        }
+
+        .section-title {
+            font-size: 1rem;
+        }
+
+        .section-description {
+            font-size: 0.78rem;
+        }
+
+        .chart-container {
+            height: 220px;
+        }
+
+        .trend-chart-container {
+            height: 200px;
+        }
+
+        .borrow-count {
+            font-size: 1.9rem;
+        }
+
+        .top-borrower-avatar {
+            width: 64px;
+            height: 64px;
+            font-size: 26px;
+            margin-bottom: 12px;
+        }
+
+        .borrower-table {
+            font-size: 0.78rem;
+        }
+
+        .borrower-table th,
+        .borrower-table td {
+            padding: 8px 6px;
+        }
+
+        .rank-number {
+            width: 28px;
+            height: 28px;
+            font-size: 0.7rem;
+        }
+
+        .book-rank {
+            width: 28px;
+            height: 28px;
+            font-size: 0.72rem;
+            margin-right: 10px;
+        }
+
+        .popular-book strong {
+            font-size: 0.82rem;
+        }
+
+        .popular-book .text-muted {
+            font-size: 0.72rem;
+        }
+    }
+
+    /* ---------- UTILITY ---------- */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+        border-radius: var(--radius-sm);
+    }
+
+    .table-responsive::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #d0d0dd;
+        border-radius: 10px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f6;
+        border-radius: 10px;
+    }
+
+    /* Fix badge colors to match theme */
+    .badge-primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .badge-success {
+        background: #2ecc71;
+        color: #fff;
+    }
+
+    .badge-secondary {
+        background: #a0a0b8;
+        color: #fff;
+    }
+
+    .alert {
+        border-radius: var(--radius-sm);
+        border: none;
+        font-size: 0.9rem;
     }
 </style>
 
@@ -248,7 +663,7 @@
 
             <!-- BORROWED BOOKS -->
 
-            <div class="col-lg-3 col-sm-6 mb-3">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
 
                 <div class="card gradient-1 summary-card">
 
@@ -283,7 +698,7 @@
 
             <!-- RETURNED BOOKS -->
 
-            <div class="col-lg-3 col-sm-6 mb-3">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
 
                 <div class="card gradient-2 summary-card">
 
@@ -318,7 +733,7 @@
 
             <!-- CURRENTLY BORROWED -->
 
-            <div class="col-lg-3 col-sm-6 mb-3">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
 
                 <div class="card gradient-3 summary-card">
 
@@ -353,7 +768,7 @@
 
             <!-- OVERDUE BOOKS -->
 
-            <div class="col-lg-3 col-sm-6 mb-3">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-3">
 
                 <div class="card gradient-4 summary-card">
 
@@ -420,7 +835,7 @@
 
             <!-- TOTAL BORROWINGS -->
 
-            <div class="col-xl-3 col-md-6 mb-4">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-4">
 
                 <div class="card analytics-card shadow-sm">
 
@@ -455,7 +870,7 @@
 
             <!-- UNIQUE BORROWERS -->
 
-            <div class="col-xl-3 col-md-6 mb-4">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-4">
 
                 <div class="card analytics-card shadow-sm">
 
@@ -490,7 +905,7 @@
 
             <!-- STUDENT BORROWINGS -->
 
-            <div class="col-xl-3 col-md-6 mb-4">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-4">
 
                 <div class="card analytics-card shadow-sm">
 
@@ -529,7 +944,7 @@
 
             <!-- PERSONNEL BORROWINGS -->
 
-            <div class="col-xl-3 col-md-6 mb-4">
+            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 mb-4">
 
                 <div class="card analytics-card shadow-sm">
 
@@ -576,7 +991,7 @@
 
             <!-- MOST FREQUENT BORROWERS -->
 
-            <div class="col-lg-8 mb-4">
+            <div class="col-xl-8 col-lg-7 mb-4">
 
                 <div class="card dashboard-panel shadow-sm">
 
@@ -603,7 +1018,7 @@
 
                                 <i
                                     class="fa fa-bar-chart"
-                                    style="font-size:45px;"
+                                    style="font-size:45px; opacity:0.4;"
                                 ></i>
 
                                 <p class="mt-3 mb-0">
@@ -623,7 +1038,7 @@
 
             <!-- TOP BORROWER -->
 
-            <div class="col-lg-4 mb-4">
+            <div class="col-xl-4 col-lg-5 mb-4">
 
                 <div class="card dashboard-panel shadow-sm">
 
@@ -640,7 +1055,7 @@
 
                         @if(isset($topBorrower) && $topBorrower)
 
-                            <div class="text-center">
+                            <div class="text-center top-borrower-info">
 
                                 <div class="top-borrower-avatar">
                                     <i class="fa fa-user"></i>
@@ -682,7 +1097,7 @@
 
                                 <i
                                     class="fa fa-user"
-                                    style="font-size:45px;"
+                                    style="font-size:45px; opacity:0.4;"
                                 ></i>
 
                                 <p class="mt-3 mb-0">
@@ -710,7 +1125,7 @@
 
             <!-- 7 DAY BORROWING ACTIVITY -->
 
-            <div class="col-lg-8 mb-4">
+            <div class="col-xl-8 col-lg-7 mb-4">
 
                 <div class="card dashboard-panel shadow-sm">
 
@@ -738,7 +1153,7 @@
 
             <!-- MOST BORROWED BOOKS -->
 
-            <div class="col-lg-4 mb-4">
+            <div class="col-xl-4 col-lg-5 mb-4">
 
                 <div class="card dashboard-panel shadow-sm">
 
@@ -970,7 +1385,7 @@
 
                                                     <i
                                                         class="fa fa-users"
-                                                        style="font-size:40px;"
+                                                        style="font-size:40px; opacity:0.4;"
                                                     ></i>
 
                                                     <p class="mt-3 mb-0">

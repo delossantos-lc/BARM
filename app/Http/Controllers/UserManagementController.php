@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Throwable;
 
 class UserManagementController extends Controller
 {
@@ -17,32 +19,52 @@ class UserManagementController extends Controller
 
     public function index()
     {
-        // Get all users
-        $users = User::orderBy('created_at', 'desc')->get();
+        $users = User::orderBy(
+            'created_at',
+            'desc'
+        )->get();
 
-        // Statistics
-        $totalStaff = User::where('access_level', 'staff')->count();
+        $totalStaff = User::where(
+            'access_level',
+            'staff'
+        )->count();
 
-        $activeStaff = User::where('access_level', 'staff')
-            ->where('status', 'active')
+        $activeStaff = User::where(
+            'access_level',
+            'staff'
+        )
+            ->where(
+                'status',
+                'active'
+            )
             ->count();
 
-        $inactiveStaff = User::where('access_level', 'staff')
-            ->where('status', 'inactive')
+        $inactiveStaff = User::where(
+            'access_level',
+            'staff'
+        )
+            ->where(
+                'status',
+                'inactive'
+            )
             ->count();
 
-        $totalAdmins = User::where('access_level', 'admin')->count();
+        $totalAdmins = User::where(
+            'access_level',
+            'admin'
+        )->count();
 
-
-        return view('usermanagement', compact(
-            'users',
-            'totalStaff',
-            'activeStaff',
-            'inactiveStaff',
-            'totalAdmins'
-        ));
+        return view(
+            'usermanagement',
+            compact(
+                'users',
+                'totalStaff',
+                'activeStaff',
+                'inactiveStaff',
+                'totalAdmins'
+            )
+        );
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -53,7 +75,6 @@ class UserManagementController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
             'firstname' => [
                 'required',
                 'string',
@@ -89,6 +110,7 @@ class UserManagementController extends Controller
 
             'access_level' => [
                 'required',
+
                 Rule::in([
                     'staff',
                     'admin',
@@ -97,6 +119,7 @@ class UserManagementController extends Controller
 
             'status' => [
                 'required',
+
                 Rule::in([
                     'active',
                     'inactive',
@@ -104,35 +127,124 @@ class UserManagementController extends Controller
             ],
         ]);
 
+        try {
+            $user = User::create([
+                'firstname' =>
+                    $validated['firstname'],
 
-        User::create([
+                'lastname' =>
+                    $validated['lastname'],
 
-            'firstname' => $validated['firstname'],
+                'employeeid' =>
+                    $validated['employeeid'],
 
-            'lastname' => $validated['lastname'],
+                'email' =>
+                    $validated['email'],
 
-            'employeeid' => $validated['employeeid'],
+                'password' =>
+                    Hash::make(
+                        $validated['password']
+                    ),
 
-            'email' => $validated['email'],
+                'access_level' =>
+                    $validated['access_level'],
 
-            'password' => Hash::make(
-                $validated['password']
-            ),
+                'status' =>
+                    $validated['status'],
+            ]);
 
-            'access_level' => $validated['access_level'],
+            /*
+             * Do not include the password in
+             * the audit log.
+             */
+            $newValue = [
+                'id' =>
+                    $user->id,
 
-            'status' => $validated['status'],
-        ]);
+                'firstname' =>
+                    $user->firstname,
 
+                'lastname' =>
+                    $user->lastname,
 
-        return redirect()
-            ->route('user.management')
-            ->with(
-                'success',
-                'Staff account created successfully.'
+                'employeeid' =>
+                    $user->employeeid,
+
+                'email' =>
+                    $user->email,
+
+                'access_level' =>
+                    $user->access_level,
+
+                'status' =>
+                    $user->status,
+            ];
+
+            AuditLogger::record(
+                action: 'Created',
+                module: 'User Management',
+                affectedRecord:
+                    'User #' . $user->id
+                    . ' - '
+                    . $user->firstname
+                    . ' '
+                    . $user->lastname,
+                previousValue: null,
+                newValue: $newValue,
+                result: 'success',
+                description:
+                    'Created a new user account.',
+                request: $request
             );
-    }
 
+            return redirect()
+                ->route('user.management')
+                ->with(
+                    'success',
+                    'Staff account created successfully.'
+                );
+        } catch (Throwable $exception) {
+            AuditLogger::record(
+                action: 'Create',
+                module: 'User Management',
+                affectedRecord:
+                    'New user account',
+                previousValue: null,
+                newValue: [
+                    'firstname' =>
+                        $validated['firstname'],
+
+                    'lastname' =>
+                        $validated['lastname'],
+
+                    'employeeid' =>
+                        $validated['employeeid'],
+
+                    'email' =>
+                        $validated['email'],
+
+                    'access_level' =>
+                        $validated['access_level'],
+
+                    'status' =>
+                        $validated['status'],
+                ],
+                result: 'failed',
+                description:
+                    'Failed to create the user account.',
+                request: $request
+            );
+
+            report($exception);
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Unable to create the account.'
+                );
+        }
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -145,7 +257,6 @@ class UserManagementController extends Controller
         User $user
     ) {
         $validated = $request->validate([
-
             'firstname' => [
                 'required',
                 'string',
@@ -182,6 +293,7 @@ class UserManagementController extends Controller
 
             'access_level' => [
                 'required',
+
                 Rule::in([
                     'staff',
                     'admin',
@@ -190,6 +302,7 @@ class UserManagementController extends Controller
 
             'status' => [
                 'required',
+
                 Rule::in([
                     'active',
                     'inactive',
@@ -204,48 +317,160 @@ class UserManagementController extends Controller
             ],
         ]);
 
-
         /*
-         * Update user information
+         * Save the values before updating.
          */
+        $previousValue = [
+            'id' =>
+                $user->id,
 
-        $user->firstname = $validated['firstname'];
+            'firstname' =>
+                $user->firstname,
 
-        $user->lastname = $validated['lastname'];
+            'lastname' =>
+                $user->lastname,
 
-        $user->employeeid = $validated['employeeid'];
+            'employeeid' =>
+                $user->employeeid,
 
-        $user->email = $validated['email'];
+            'email' =>
+                $user->email,
 
-        $user->access_level = $validated['access_level'];
+            'access_level' =>
+                $user->access_level,
 
-        $user->status = $validated['status'];
+            'status' =>
+                $user->status,
+        ];
 
+        try {
+            $user->firstname =
+                $validated['firstname'];
 
-        /*
-         * Only update password if
-         * a new password was entered.
-         */
+            $user->lastname =
+                $validated['lastname'];
 
-        if (!empty($validated['password'])) {
+            $user->employeeid =
+                $validated['employeeid'];
 
-            $user->password = Hash::make(
-                $validated['password']
+            $user->email =
+                $validated['email'];
+
+            $user->access_level =
+                $validated['access_level'];
+
+            $user->status =
+                $validated['status'];
+
+            if (
+                !empty(
+                    $validated['password']
+                )
+            ) {
+                $user->password =
+                    Hash::make(
+                        $validated['password']
+                    );
+            }
+
+            $user->save();
+
+            $newValue = [
+                'id' =>
+                    $user->id,
+
+                'firstname' =>
+                    $user->firstname,
+
+                'lastname' =>
+                    $user->lastname,
+
+                'employeeid' =>
+                    $user->employeeid,
+
+                'email' =>
+                    $user->email,
+
+                'access_level' =>
+                    $user->access_level,
+
+                'status' =>
+                    $user->status,
+
+                'password_changed' =>
+                    !empty(
+                        $validated['password']
+                    ),
+            ];
+
+            AuditLogger::record(
+                action: 'Updated',
+                module: 'User Management',
+                affectedRecord:
+                    'User #' . $user->id
+                    . ' - '
+                    . $user->firstname
+                    . ' '
+                    . $user->lastname,
+                previousValue:
+                    $previousValue,
+                newValue:
+                    $newValue,
+                result: 'success',
+                description:
+                    'Updated a user account.',
+                request: $request
             );
+
+            return redirect()
+                ->route('user.management')
+                ->with(
+                    'success',
+                    'Staff account updated successfully.'
+                );
+        } catch (Throwable $exception) {
+            AuditLogger::record(
+                action: 'Update',
+                module: 'User Management',
+                affectedRecord:
+                    'User #' . $user->id,
+                previousValue:
+                    $previousValue,
+                newValue: [
+                    'firstname' =>
+                        $validated['firstname'],
+
+                    'lastname' =>
+                        $validated['lastname'],
+
+                    'employeeid' =>
+                        $validated['employeeid'],
+
+                    'email' =>
+                        $validated['email'],
+
+                    'access_level' =>
+                        $validated['access_level'],
+
+                    'status' =>
+                        $validated['status'],
+                ],
+                result: 'failed',
+                description:
+                    'Failed to update the user account.',
+                request: $request
+            );
+
+            report($exception);
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Unable to update the account.'
+                );
         }
-
-
-        $user->save();
-
-
-        return redirect()
-            ->route('user.management')
-            ->with(
-                'success',
-                'Staff account updated successfully.'
-            );
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -253,17 +478,52 @@ class UserManagementController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function destroy(User $user)
-    {
-        /*
-         * Prevent logged-in user from
-         * deleting their own account.
-         */
-
+    public function destroy(
+        Request $request,
+        User $user
+    ) {
         if (
-            auth()->check() &&
+            auth()->check()
+            &&
             auth()->id() === $user->id
         ) {
+            AuditLogger::record(
+                action: 'Delete',
+                module: 'User Management',
+                affectedRecord:
+                    'User #' . $user->id
+                    . ' - '
+                    . $user->firstname
+                    . ' '
+                    . $user->lastname,
+                previousValue: [
+                    'id' =>
+                        $user->id,
+
+                    'firstname' =>
+                        $user->firstname,
+
+                    'lastname' =>
+                        $user->lastname,
+
+                    'employeeid' =>
+                        $user->employeeid,
+
+                    'email' =>
+                        $user->email,
+
+                    'access_level' =>
+                        $user->access_level,
+
+                    'status' =>
+                        $user->status,
+                ],
+                newValue: null,
+                result: 'failed',
+                description:
+                    'Attempted to delete the currently logged-in account.',
+                request: $request
+            );
 
             return redirect()
                 ->route('user.management')
@@ -273,15 +533,82 @@ class UserManagementController extends Controller
                 );
         }
 
+        $previousValue = [
+            'id' =>
+                $user->id,
 
-        $user->delete();
+            'firstname' =>
+                $user->firstname,
 
+            'lastname' =>
+                $user->lastname,
 
-        return redirect()
-            ->route('user.management')
-            ->with(
-                'success',
-                'Staff account deleted successfully.'
+            'employeeid' =>
+                $user->employeeid,
+
+            'email' =>
+                $user->email,
+
+            'access_level' =>
+                $user->access_level,
+
+            'status' =>
+                $user->status,
+        ];
+
+        $affectedRecord =
+            'User #' . $user->id
+            . ' - '
+            . $user->firstname
+            . ' '
+            . $user->lastname;
+
+        try {
+            $user->delete();
+
+            AuditLogger::record(
+                action: 'Deleted',
+                module: 'User Management',
+                affectedRecord:
+                    $affectedRecord,
+                previousValue:
+                    $previousValue,
+                newValue:
+                    null,
+                result: 'success',
+                description:
+                    'Deleted a user account.',
+                request: $request
             );
+
+            return redirect()
+                ->route('user.management')
+                ->with(
+                    'success',
+                    'Staff account deleted successfully.'
+                );
+        } catch (Throwable $exception) {
+            AuditLogger::record(
+                action: 'Delete',
+                module: 'User Management',
+                affectedRecord:
+                    $affectedRecord,
+                previousValue:
+                    $previousValue,
+                newValue:
+                    null,
+                result: 'failed',
+                description:
+                    'Failed to delete the user account.',
+                request: $request
+            );
+
+            report($exception);
+
+            return back()->with(
+                'error',
+                'Unable to delete the account.'
+            );
+        }
     }
 }

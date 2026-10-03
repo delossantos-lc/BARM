@@ -97,4 +97,4 @@ class LoginController extends Controller
             ->route('login')
             ->with('success', 'You have been logged out.');
     }
-}
+}   

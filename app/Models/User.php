@@ -13,9 +13,6 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Mass assignable fields.
-     */
     protected $fillable = [
         'firstname',
         'lastname',
@@ -26,17 +23,11 @@ class User extends Authenticatable
         'status',
     ];
 
-    /**
-     * Hidden fields.
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Field casts.
-     */
     protected function casts(): array
     {
         return [
@@ -45,31 +36,70 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Use Employee ID for authentication.
-     */
-    public function username()
+    /*
+    |--------------------------------------------------------------------------
+    | AUTHENTICATION USERNAME
+    |--------------------------------------------------------------------------
+    */
+
+    public function username(): string
     {
         return 'employeeid';
     }
 
-    /**
-     * User's full name.
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | FULL NAME
+    |--------------------------------------------------------------------------
+    */
+
     public function getFullNameAttribute(): string
     {
         return trim(
-            $this->firstname . ' ' . $this->lastname
+            $this->firstname
+            . ' '
+            . $this->lastname
         );
     }
 
-    /**
-     * Attendance records.
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | ATTENDANCES
+    |--------------------------------------------------------------------------
+    */
+
     public function attendances(): HasMany
     {
         return $this->hasMany(
             Attendance::class
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | FINES PROCESSED BY THIS USER
+    |--------------------------------------------------------------------------
+    */
+
+    public function processedFines(): HasMany
+    {
+        return $this->hasMany(
+            BookFine::class,
+            'processed_by'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PAYMENTS RECEIVED BY THIS USER
+    |--------------------------------------------------------------------------
+    */
+
+    public function receivedFinePayments(): HasMany
+    {
+        return $this->hasMany(
+            FinePayment::class,
+            'received_by'
         );
     }
 }

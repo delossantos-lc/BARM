@@ -19,9 +19,14 @@ class Personnel extends Model
         'employee_number',
         'department',
         'rfid_tag_uid',
-        'contact_information',
+        'fingerprint_id',
+        'email',
+        
     ];
 
+    protected $casts = [
+    'fingerprint_id' => 'integer',
+];
     /*
     |--------------------------------------------------------------------------
     | ALL ATTENDANCE RECORDS

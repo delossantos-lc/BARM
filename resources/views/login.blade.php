@@ -1,29 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>   
+<head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>RFID BARM Login</title>
-
-    <!-- Bootstrap CSS -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    <!-- Bootstrap Icons -->
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance and Resources Processing with RFID System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        * {
+        /* ===== RESET & BASE ===== */
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
@@ -32,55 +19,37 @@
             width: 100%;
             min-height: 100%;
             margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             overflow-x: hidden;
+            background: #1a0b1a;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
+        /* ===== MAIN CONTAINER ===== */
         .login-page {
             position: relative;
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 60px;
-
-            /*
-            Add your background image later:
-
-            background-image:
-                linear-gradient(
-                    rgba(238, 162, 185, 0.55),
-                    rgba(217, 93, 145, 0.62)
-                ),
-                url('{{ asset("images/login-background.jpg") }}');
-
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            */
-
+            padding: clamp(16px, 4vw, 48px) clamp(16px, 4vw, 60px);
             background:
-                radial-gradient(
-                    circle at 25% 55%,
-                    rgba(255, 255, 255, 0.28),
-                    transparent 30%
-                ),
-                linear-gradient(
-                    135deg,
-                    #e9d8e5 0%,
-                    #e7b9cc 45%,
-                    #d988aa 100%
-                );
+                radial-gradient(circle at 15% 30%, rgba(255, 235, 245, 0.4), transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(235, 190, 220, 0.35), transparent 50%),
+                linear-gradient(145deg, #f5e9f0 0%, #ecc8de 40%, #d99cb8 100%);
         }
 
         .login-page::before {
             content: "";
             position: absolute;
             inset: 0;
-            background: rgba(255, 190, 210, 0.16);
+            background: rgba(255, 215, 235, 0.06);
             pointer-events: none;
         }
 
@@ -88,29 +57,30 @@
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 1600px;
+            max-width: 1560px;
         }
 
+        /* ===== LEFT SECTION (MOTTO) ===== */
         .left-section {
-            min-height: 650px;
+            min-height: min(650px, 70vh);
             display: flex;
             align-items: flex-end;
-            padding: 40px;
+            padding: clamp(20px, 3vw, 40px);
         }
 
         .school-message {
             color: #ffffff;
-            text-shadow: 0 4px 18px rgba(95, 30, 65, 0.3);
+            text-shadow: 0 6px 28px rgba(100, 30, 70, 0.45);
         }
 
         .school-message h1 {
             margin: 0;
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: clamp(3.8rem, 7vw, 7.3rem);
+            font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+            font-size: clamp(3rem, 6.5vw, 7rem);
             font-style: italic;
             font-weight: 700;
             line-height: 0.95;
-            letter-spacing: -4px;
+            letter-spacing: -3px;
         }
 
         .message-line {
@@ -118,16 +88,18 @@
         }
 
         .established {
-            margin-top: 28px;
-            margin-left: 95px;
-            font-size: 1rem;
+            margin-top: clamp(16px, 2.5vw, 32px);
+            margin-left: clamp(30px, 6vw, 100px);
+            font-size: clamp(0.7rem, 1vw, 1rem);
             font-weight: 600;
-            letter-spacing: 13px;
+            letter-spacing: clamp(6px, 1.2vw, 13px);
             text-transform: lowercase;
+            opacity: 0.95;
         }
 
+        /* ===== RIGHT CARD SECTION ===== */
         .login-card-section {
-            min-height: 650px;
+            min-height: min(650px, 70vh);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -135,77 +107,90 @@
 
         .login-card {
             width: 100%;
-            max-width: 440px;
-            padding: 42px 38px;
-            border: 1px solid rgba(255, 255, 255, 0.58);
-            border-radius: 22px;
-            background: rgba(255, 255, 255, 0.64);
-            box-shadow: 0 22px 55px rgba(93, 36, 67, 0.22);
-            backdrop-filter: blur(13px);
-            -webkit-backdrop-filter: blur(13px);
+            max-width: clamp(340px, 32vw, 460px);
+            padding: clamp(24px, 3vw, 44px) clamp(20px, 2.8vw, 40px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: clamp(20px, 2.5vw, 32px);
+            background: rgba(255, 255, 255, 0.78);
+            box-shadow:
+                0 30px 60px rgba(70, 20, 50, 0.25),
+                0 10px 30px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
         }
 
-        .logo-placeholder {
-            width: 105px;
-            height: 105px;
-            margin: 0 auto 18px;
-            border: 3px solid #d83c82;
-            border-radius: 50%;
+        .login-card:hover {
+            box-shadow: 0 35px 70px rgba(70, 20, 50, 0.3);
+        }
+
+        .logo-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #d83c82;
-            background: rgba(255, 255, 255, 0.72);
-            font-size: 0.75rem;
-            font-weight: 700;
-            line-height: 1.2;
-            text-align: center;
+            width: 100%;
+            margin-bottom: clamp(4px, 1vw, 10px);
+        }
+
+        .school-logo {
+            display: block;
+            width: clamp(72px, 8vw, 100px);
+            height: clamp(72px, 8vw, 100px);
+            object-fit: contain;
+            filter: drop-shadow(0 6px 12px rgba(180, 60, 120, 0.2));
         }
 
         .login-title {
-            margin-bottom: 30px;
-            color: #303030;
-            font-size: 2rem;
-            font-weight: 500;
-            letter-spacing: 2px;
+            margin-bottom: clamp(18px, 2.5vw, 30px);
+            color: #2a1a2a;
+            font-size: clamp(1.05rem, 1.6vw, 1.45rem);
+            font-weight: 600;
+            letter-spacing: 0.5px;
             text-align: center;
+            line-height: 1.45;
+            padding: 0 4px;
         }
 
+        /* ===== FORM ===== */
         .form-group-custom {
             position: relative;
-            margin-bottom: 18px;
+            margin-bottom: clamp(14px, 1.8vw, 20px);
         }
 
         .input-icon {
             position: absolute;
             top: 50%;
-            left: 17px;
+            left: clamp(14px, 1.5vw, 18px);
             z-index: 2;
-            color: #888888;
-            font-size: 1rem;
+            color: #a06a86;
+            font-size: clamp(0.95rem, 1.2vw, 1.1rem);
             transform: translateY(-50%);
             pointer-events: none;
+            transition: color 0.2s;
         }
 
         .form-control.login-input {
-            height: 52px;
-            padding: 10px 48px;
-            border: 1px solid rgba(215, 215, 215, 0.95);
-            border-radius: 7px;
-            background: rgba(255, 255, 255, 0.93);
-            color: #333333;
-            font-size: 0.95rem;
-            box-shadow: none;
+            height: clamp(46px, 5vw, 56px);
+            padding: 10px clamp(42px, 4vw, 48px);
+            border: 1.5px solid rgba(200, 170, 190, 0.6);
+            border-radius: clamp(10px, 1.2vw, 14px);
+            background: rgba(255, 255, 255, 0.92);
+            color: #2a1a2a;
+            font-size: clamp(0.85rem, 1vw, 0.95rem);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: border 0.2s, box-shadow 0.2s, background 0.2s;
         }
 
         .form-control.login-input:focus {
-            border-color: #d84f8e;
+            border-color: #c74b8a;
             background: #ffffff;
-            box-shadow: 0 0 0 0.2rem rgba(216, 79, 142, 0.15);
+            box-shadow: 0 0 0 4px rgba(199, 75, 138, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            outline: none;
         }
 
         .form-control.login-input::placeholder {
-            color: #8a8a8a;
+            color: #b294a8;
+            font-weight: 400;
         }
 
         .form-control.is-invalid {
@@ -215,154 +200,290 @@
         }
 
         .password-input {
-            padding-right: 52px !important;
+            padding-right: clamp(42px, 4vw, 52px) !important;
         }
 
         .password-toggle {
             position: absolute;
             top: 50%;
-            right: 17px;
+            right: clamp(12px, 1.4vw, 18px);
             z-index: 3;
             border: 0;
-            padding: 0;
-            color: #888888;
+            padding: 6px;
+            color: #a06a86;
             background: transparent;
-            font-size: 1rem;
+            font-size: clamp(0.95rem, 1.1vw, 1.15rem);
             transform: translateY(-50%);
             cursor: pointer;
+            border-radius: 50%;
+            transition: color 0.2s, background 0.2s;
         }
 
         .password-toggle:hover {
-            color: #d83c82;
+            color: #b12f6b;
+            background: rgba(199, 75, 138, 0.08);
         }
 
         .form-options {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin: 4px 0 22px;
-            font-size: 0.85rem;
+            margin: 4px 0 clamp(18px, 2.2vw, 28px);
+            font-size: clamp(0.8rem, 0.95vw, 0.9rem);
+        }
+
+        .form-check-input {
+            border-color: #c9a3b8;
+            width: 1.1em;
+            height: 1.1em;
+            margin-top: 0.15em;
         }
 
         .form-check-input:checked {
-            border-color: #d83c82;
-            background-color: #d83c82;
+            border-color: #b12f6b;
+            background-color: #b12f6b;
         }
 
         .form-check-input:focus {
-            border-color: #d83c82;
-            box-shadow: 0 0 0 0.2rem rgba(216, 60, 130, 0.15);
+            border-color: #b12f6b;
+            box-shadow: 0 0 0 3px rgba(177, 47, 107, 0.2);
         }
 
-        .forgot-password {
-            color: #b72e6e;
-            text-decoration: none;
+        .form-check-label {
+            color: #4a3040;
+            font-weight: 500;
+            padding-left: 6px;
         }
 
-        .forgot-password:hover {
-            color: #8d1f55;
-            text-decoration: underline;
-        }
-
+        /* ===== BUTTON ===== */
         .login-button {
             width: 100%;
-            height: 51px;
+            height: clamp(46px, 5vw, 56px);
             border: none;
-            border-radius: 7px;
-            background: #2e8737;
+            border-radius: clamp(10px, 1.3vw, 16px);
+            background: linear-gradient(135deg, #3a9e4a 0%, #2a7e38 100%);
             color: #ffffff;
-            font-size: 0.95rem;
+            font-size: clamp(0.85rem, 1vw, 1rem);
             font-weight: 600;
-            letter-spacing: 1px;
-            transition:
-                background 0.2s ease,
-                transform 0.2s ease;
+            letter-spacing: 0.8px;
+            box-shadow: 0 8px 20px rgba(46, 135, 55, 0.3);
+            transition: background 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-button i {
+            font-size: clamp(0.95rem, 1.1vw, 1.1rem);
         }
 
         .login-button:hover {
-            background: #246f2d;
+            background: linear-gradient(135deg, #2f8a3e 0%, #1f6a2c 100%);
+            box-shadow: 0 12px 26px rgba(46, 135, 55, 0.4);
+            transform: translateY(-2px);
             color: #ffffff;
-            transform: translateY(-1px);
         }
 
         .login-button:active {
-            transform: translateY(0);
+            transform: translateY(1px);
+            box-shadow: 0 6px 14px rgba(46, 135, 55, 0.3);
         }
 
+        /* ===== ALERTS ===== */
         .alert {
-            font-size: 0.88rem;
+            font-size: clamp(0.78rem, 0.95vw, 0.88rem);
             text-align: left;
+            border-radius: 12px;
+            border: none;
+            padding: clamp(10px, 1.2vw, 14px) clamp(14px, 1.6vw, 18px);
+            margin-bottom: clamp(14px, 1.8vw, 20px);
+        }
+
+        .alert-danger {
+            background: #fce4ec;
+            color: #8a1e4a;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #1b5e20;
         }
 
         .invalid-feedback {
             margin-top: 6px;
-            font-size: 0.8rem;
+            font-size: clamp(0.72rem, 0.85vw, 0.8rem);
             text-align: left;
+            color: #b02a37;
         }
 
+        /* ===== RESPONSIVE BREAKPOINTS ===== */
+
+        /* Large tablets & small desktops */
+        @media (max-width: 1199.98px) {
+            .login-card {
+                max-width: clamp(320px, 38vw, 420px);
+            }
+
+            .left-section {
+                min-height: min(550px, 65vh);
+            }
+        }
+
+        /* Tablets */
         @media (max-width: 991.98px) {
             .login-page {
-                padding: 35px 20px;
+                padding: clamp(20px, 4vw, 40px) clamp(16px, 3vw, 32px);
             }
 
             .left-section {
                 min-height: auto;
                 justify-content: center;
-                padding: 20px 10px 45px;
+                padding: clamp(16px, 2vw, 24px) 10px clamp(28px, 4vw, 48px);
                 text-align: center;
             }
 
             .school-message h1 {
-                font-size: clamp(3rem, 13vw, 5.7rem);
+                font-size: clamp(2.8rem, 11vw, 5.5rem);
                 letter-spacing: -2px;
             }
 
             .established {
                 margin-left: 0;
-                letter-spacing: 8px;
+                letter-spacing: clamp(5px, 1.5vw, 8px);
             }
 
             .login-card-section {
                 min-height: auto;
             }
+
+            .login-card {
+                max-width: clamp(360px, 60vw, 480px);
+            }
         }
 
+        /* Small tablets & large phones */
+        @media (max-width: 767.98px) {
+            .school-message h1 {
+                font-size: clamp(2.5rem, 13vw, 4.5rem);
+                letter-spacing: -1.5px;
+            }
+
+            .login-card {
+                max-width: 100%;
+                margin: 0 auto;
+            }
+
+            .login-card-section {
+                padding: 0 10px;
+            }
+        }
+
+        /* Phones */
         @media (max-width: 575.98px) {
             .login-page {
-                padding: 25px 15px;
+                padding: clamp(14px, 3vw, 24px) clamp(12px, 3vw, 18px);
             }
 
             .left-section {
-                padding-bottom: 30px;
+                padding-bottom: clamp(20px, 4vw, 36px);
             }
 
             .school-message h1 {
+                font-size: clamp(2.2rem, 15vw, 3.8rem);
                 letter-spacing: -1px;
             }
 
             .established {
-                font-size: 0.8rem;
-                letter-spacing: 5px;
+                font-size: clamp(0.65rem, 2.5vw, 0.8rem);
+                letter-spacing: clamp(3px, 1.5vw, 5px);
             }
 
             .login-card {
-                padding: 32px 22px;
-                border-radius: 17px;
+                padding: clamp(22px, 6vw, 34px) clamp(16px, 5vw, 24px);
+                border-radius: clamp(16px, 4vw, 24px);
             }
 
-            .logo-placeholder {
-                width: 88px;
-                height: 88px;
+            .school-logo {
+                width: clamp(64px, 20vw, 88px);
+                height: clamp(64px, 20vw, 88px);
             }
 
             .login-title {
-                font-size: 1.55rem;
+                font-size: clamp(0.95rem, 4vw, 1.15rem);
+                margin-bottom: clamp(14px, 4vw, 22px);
             }
 
             .form-options {
-                align-items: flex-start;
                 flex-direction: column;
-                gap: 10px;
+                align-items: flex-start;
+                gap: clamp(8px, 2vw, 12px);
+            }
+
+            .login-button {
+                height: clamp(44px, 12vw, 52px);
+                font-size: clamp(0.85rem, 3.5vw, 0.95rem);
+            }
+
+            .form-control.login-input {
+                height: clamp(44px, 11vw, 52px);
+                font-size: clamp(0.82rem, 3.5vw, 0.9rem);
+            }
+
+            .input-icon {
+                font-size: clamp(0.9rem, 3.5vw, 1rem);
+            }
+
+            .password-toggle {
+                font-size: clamp(0.9rem, 3.5vw, 1rem);
+            }
+        }
+
+        /* Very small phones */
+        @media (max-width: 359.98px) {
+            .school-message h1 {
+                font-size: clamp(1.9rem, 14vw, 2.8rem);
+            }
+
+            .login-card {
+                padding: 18px 14px;
+                border-radius: 16px;
+            }
+
+            .login-title {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Landscape phones & short screens */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .login-page {
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+            .left-section {
+                min-height: auto;
+                padding: 10px 20px;
+                align-items: center;
+            }
+
+            .school-message h1 {
+                font-size: clamp(2rem, 5vw, 3rem);
+            }
+
+            .established {
+                margin-top: 8px;
+                margin-left: 20px;
+            }
+
+            .login-card-section {
+                min-height: auto;
+            }
+
+            .login-card {
+                padding: 20px 24px;
             }
         }
     </style>
@@ -372,9 +493,9 @@
 
 <section class="login-page">
     <div class="page-content">
-        <div class="row align-items-center">
+        <div class="row align-items-center g-0">
 
-            <!-- Left side -->
+            <!-- Left side: motto -->
             <div class="col-lg-7">
                 <div class="left-section">
                     <div class="school-message">
@@ -383,139 +504,86 @@
                             <span class="message-line">Excellence.</span>
                             <span class="message-line">Service.</span>
                         </h1>
-
-                        <div class="established">
-                            est. 1928
-                        </div>
+                        <div class="established">est. 1928</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Login card -->
+            <!-- Right side: login card -->
             <div class="col-lg-5">
                 <div class="login-card-section">
                     <div class="login-card">
 
-                        <!-- Replace this with your logo later -->
-                        <div class="logo-placeholder">
-                            SCHOOL<br>
-                            LOGO
+                        <div class="logo-container">
+                            <img src="{{ asset('Image/LC_LOGO.png') }}" alt="Lourdes College Logo" class="school-logo">
                         </div>
 
-                        <!-- Example logo code:
-                        <img
-                            src="{{ asset('images/logo.png') }}"
-                            alt="School Logo"
-                            class="d-block mx-auto mb-3"
-                            style="width: 105px; height: 105px; object-fit: contain;"
-                        >
-                        -->
-
                         <h2 class="login-title">
-                            RFID BARM LOGIN
+                            Attendance and Resources Processing with Integration of RFID System
                         </h2>
 
                         @if (session('error'))
                             <div class="alert alert-danger">
-                                {{ session('error') }}
+                                <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
                             </div>
                         @endif
 
                         @if (session('success'))
                             <div class="alert alert-success">
-                                {{ session('success') }}
+                                <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
                             </div>
                         @endif
 
                         @if ($errors->any())
                             <div class="alert alert-danger">
-                                {{ $errors->first() }}
+                                <i class="bi bi-exclamation-circle me-2"></i>{{ $errors->first() }}
                             </div>
                         @endif
 
-                        <form
-    action="{{ route('login.authenticate') }}"
-    method="POST"
->
-    @csrf
+                        <form action="{{ route('login.authenticate') }}" method="POST">
+                            @csrf
 
-    <!-- Employee ID -->
-    <div class="form-group-custom">
-        <i class="bi bi-person-circle input-icon"></i>
+                            <div class="form-group-custom">
+                                <i class="bi bi-person-circle input-icon"></i>
+                                <input type="text" name="employeeid" id="employeeid"
+                                    class="form-control login-input @error('employeeid') is-invalid @enderror"
+                                    placeholder="Employee ID Number" value="{{ old('employeeid') }}"
+                                    autocomplete="username" required autofocus>
 
-        <input
-            type="text"
-            name="employeeid"
-            id="employeeid"
-            class="form-control login-input @error('employeeid') is-invalid @enderror"
-            placeholder="Employee ID Number"
-            value="{{ old('employeeid') }}"
-            autocomplete="username"
-            required
-            autofocus
-        >
+                                @error('employeeid')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-        @error('employeeid')
-            <div class="invalid-feedback">
-                {{ $message }}
-            </div>
-        @enderror
-    </div>
+                            <div class="form-group-custom">
+                                <i class="bi bi-lock-fill input-icon"></i>
+                                <input type="password" name="password" id="password"
+                                    class="form-control login-input password-input @error('password') is-invalid @enderror"
+                                    placeholder="Password" autocomplete="current-password" required>
 
-    <!-- Password -->
-    <div class="form-group-custom">
-        <i class="bi bi-lock-fill input-icon"></i>
+                                <button type="button" class="password-toggle" id="togglePassword"
+                                    aria-label="Show or hide password">
+                                    <i class="bi bi-eye" id="passwordIcon"></i>
+                                </button>
 
-        <input
-            type="password"
-            name="password"
-            id="password"
-            class="form-control login-input password-input @error('password') is-invalid @enderror"
-            placeholder="Password"
-            autocomplete="current-password"
-            required
-        >
+                                @error('password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-        <button
-            type="button"
-            class="password-toggle"
-            id="togglePassword"
-            aria-label="Show or hide password"
-        >
-            <i class="bi bi-eye" id="passwordIcon"></i>
-        </button>
+                            <div class="form-options">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="remember"
+                                        id="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="remember">Remember me</label>
+                                </div>
+                            </div>
 
-        @error('password')
-            <div class="invalid-feedback">
-                {{ $message }}
-            </div>
-        @enderror
-    </div>
-
-    <!-- Remember me -->
-    <div class="form-options">
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                name="remember"
-                id="remember"
-                value="1"
-                {{ old('remember') ? 'checked' : '' }}
-            >
-
-            <label class="form-check-label" for="remember">
-                Remember me
-            </label>
-        </div>
-    </div>
-
-    <!-- Login button -->
-    <button type="submit" class="btn login-button">
-        <i class="bi bi-box-arrow-in-right me-2"></i>
-        LOG IN
-    </button>
-</form>
+                            <button type="submit" class="btn login-button">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                Log In
+                            </button>
+                        </form>
 
                     </div>
                 </div>
@@ -555,7 +623,6 @@
     });
 </script>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

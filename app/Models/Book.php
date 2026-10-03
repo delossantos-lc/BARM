@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Book extends Model
 {
-    use HasFactory;
-
+    use HasFactory, SoftDeletes;
     protected $table = 'books';
 
     protected $fillable = [
@@ -28,7 +27,8 @@ class Book extends Model
         'issn',
         'lccn',
         'subjects',
-        'additional_details'
+        'additional_details',
+        'replacement_price'
     ];
 
     public function copies()
